@@ -149,7 +149,6 @@
         app:fastScrollerAutoHideDelayInMillis="1000"
         app:fastScrollerBubblePosition="adjacent"
         app:fastScrollerBubbleEnabled="true"
-        app:fastScrollerHandleAlwaysVisible="false"
         app:fastScrollerIgnoreTouchesOutsideHandle="false"
         tools:visibility="visible" />
 
