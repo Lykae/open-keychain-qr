@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 
 public class QrCodeViewActivity extends BaseActivity {
     public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
+    public static final String EXTRA_TEXT = "text";
 
     private ImageView qrCodeImageView;
     private Bitmap qrCode;
@@ -53,6 +54,32 @@ public class QrCodeViewActivity extends BaseActivity {
         CardView mQrCodeLayout = findViewById(R.id.qr_code_image_layout);
 
         mQrCodeLayout.setOnClickListener(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
+
+        String text = getIntent().getStringExtra(EXTRA_TEXT);
+
+        if (text != null) {
+            try {
+                qrCode = QrCodeUtils.getQRCodeBitmap(text, 0);
+
+                qrCodeImageView.post(() -> {
+                    Bitmap scaled = Bitmap.createScaledBitmap(
+                            qrCode,
+                            qrCodeImageView.getWidth(),
+                            qrCodeImageView.getWidth(),
+                            false
+                    );
+                    qrCodeImageView.setImageBitmap(scaled);
+                });
+
+            } catch (Exception e) {
+                Notify.create(this,
+                        "Message too large for QR",
+                        Style.ERROR).show();
+                finish();
+            }
+
+            return;
+        }
 
         if (!getIntent().hasExtra(EXTRA_MASTER_KEY_ID)) {
             throw new IllegalArgumentException("Missing required extra master_key_id");
@@ -69,6 +96,33 @@ public class QrCodeViewActivity extends BaseActivity {
             }
         });
     }
+
+    //@Override
+    //public void onCreate(Bundle savedInstanceState) {
+    //    super.onCreate(savedInstanceState);
+//
+    //    setFullScreenDialogClose(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
+//
+    //    qrCodeImageView = findViewById(R.id.qr_code_image);
+    //    CardView mQrCodeLayout = findViewById(R.id.qr_code_image_layout);
+//
+    //    mQrCodeLayout.setOnClickListener(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
+//
+    //    if (!getIntent().hasExtra(EXTRA_MASTER_KEY_ID)) {
+    //        throw new IllegalArgumentException("Missing required extra master_key_id");
+    //    }
+//
+    //    UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
+    //    viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
+    //    viewModel.getUnifiedKeyInfoLiveData(getApplicationContext()).observe(this, this::onLoadUnifiedKeyInfo);
+//
+    //    qrCodeImageView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+    //        if (qrCode != null) {
+    //            Bitmap scaled = Bitmap.createScaledBitmap(qrCode, qrCodeImageView.getWidth(), qrCodeImageView.getWidth(), false);
+    //            qrCodeImageView.setImageBitmap(scaled);
+    //        }
+    //    });
+    //}
 
     private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
         if (unifiedKeyInfo == null) {

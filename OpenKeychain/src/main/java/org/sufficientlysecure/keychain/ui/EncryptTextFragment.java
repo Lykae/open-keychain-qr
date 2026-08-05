@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -196,18 +197,21 @@ public class EncryptTextFragment
             case R.id.encrypt_copy: {
                 hideKeyboard();
                 mShareAfterEncrypt = false;
+                mShowQrAfterEncrypt = false;
                 cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mShareAfterEncrypt = true;
+                mShowQrAfterEncrypt = false;
                 cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_qr_show: {
                 hideKeyboard();
                 mShareAfterEncrypt = false;
+                mShowQrAfterEncrypt = true;
                 cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
@@ -387,8 +391,12 @@ public class EncryptTextFragment
         } else if (mShowQrAfterEncrypt) {
             // Show encrypted message/file QR
             //TODO show qr
-            startActivity(Intent.createChooser(createSendIntent(result.getResultBytes()),
-                    getString(R.string.title_share_message)));
+            Intent intent = new Intent(getActivity(), QrCodeViewActivity.class);
+            intent.putExtra(
+                    QrCodeViewActivity.EXTRA_TEXT,
+                    new String(result.getResultBytes())
+            );
+            startActivity(intent);
         } else if (mReturnProcessTextAfterEncrypt) {
             Intent resultIntent = new Intent();
             resultIntent.putExtra(Intent.EXTRA_PROCESS_TEXT, new String(result.getResultBytes()));
