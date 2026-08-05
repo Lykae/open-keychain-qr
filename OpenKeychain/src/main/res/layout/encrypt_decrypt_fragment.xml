@@ -101,6 +101,19 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/decrypt_qr_code"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawablePadding="8dp"
+            android:drawableRight="@drawable/ic_qrcode_white_24dp"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:text="@string/btn_decrypt_qr_code"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
     </LinearLayout>
 
 </ScrollView>

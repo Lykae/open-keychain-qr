@@ -20,7 +20,7 @@
     <item
         android:id="@+id/encrypt_qr_show"
         android:title="@string/btn_show_qr_code"
-        android:icon="@drawable/ic_action_qr_show_24dp"
+        android:icon="@drawable/ic_qrcode_white_24dp"
         android:orderInCategory="1"
         app:showAsAction="ifRoom" />
 

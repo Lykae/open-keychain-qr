@@ -48,6 +48,8 @@ public class EncryptDecryptFragment extends Fragment {
 
     View mClipboardIcon;
 
+    private static final int REQUEST_QR = 0x00007004;
+
     private static final int REQUEST_CODE_INPUT = 0x00007003;
 
     @Override
@@ -94,6 +96,21 @@ public class EncryptDecryptFragment extends Fragment {
             public void onClick(View v) {
                 decryptFromClipboard();
             }
+        });
+
+        view.findViewById(R.id.decrypt_qr_code).setOnClickListener(v -> {
+
+            Intent qrIntent = new Intent(
+                    getActivity(),
+                    QrCodeCaptureActivity.class
+            );
+
+            qrIntent.putExtra(
+                    QrCodeCaptureActivity.EXTRA_SCAN_MODE,
+                    QrCodeCaptureActivity.MODE_DECRYPT_MESSAGE
+            );
+
+            startActivityForResult(qrIntent, REQUEST_QR);
         });
 
         return view;
@@ -173,22 +190,58 @@ public class EncryptDecryptFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != REQUEST_CODE_INPUT) {
-            return;
-        }
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            if (uri == null) {
-                Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR).show();
+        if (requestCode == REQUEST_QR
+                && resultCode == Activity.RESULT_OK
+                && data != null) {
+
+            String qrText = data.getStringExtra("SCAN_RESULT");
+
+            if (qrText == null) {
                 return;
             }
 
-            Intent intent = new Intent(getActivity(), DecryptActivity.class);
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setData(uri);
-            startActivity(intent);
+            if (qrText.contains("BEGIN PGP MESSAGE")) {
 
+                Intent decryptIntent = new Intent(
+                        Intent.ACTION_SEND
+                );
+
+                decryptIntent.setType("text/plain");
+                decryptIntent.putExtra(
+                        Intent.EXTRA_TEXT,
+                        qrText
+                );
+
+                decryptIntent.setClass(
+                        getActivity(),
+                        DecryptActivity.class
+                );
+
+                startActivity(decryptIntent);
+            }
+
+            return;
+        }
+
+        if (requestCode == REQUEST_CODE_INPUT) {
+
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                Uri uri = data.getData();
+
+                if (uri == null) {
+                    Notify.create(getActivity(),
+                            R.string.no_file_selected,
+                            Notify.Style.ERROR).show();
+                    return;
+                }
+
+                Intent intent = new Intent(getActivity(), DecryptActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(uri);
+                startActivity(intent);
+            }
         }
     }
 

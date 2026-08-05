@@ -22,20 +22,33 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.core.content.ContextCompat;
 import android.view.KeyEvent;
 
+import com.google.zxing.ResultPoint;
+import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
+import com.journeyapps.barcodescanner.BarcodeResult;
 
 import org.sufficientlysecure.keychain.R;
+
+import java.util.List;
 
 public class QrCodeCaptureActivity extends FragmentActivity {
     private CaptureManager capture;
     private CompoundBarcodeView barcodeScannerView;
+
+    public static final String EXTRA_SCAN_MODE = "scan_mode";
+    public static final int MODE_IMPORT_KEY = 0;
+    public static final int MODE_DECRYPT_MESSAGE = 1;
+    private int scanMode = MODE_IMPORT_KEY;
 
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 42;
 
@@ -44,6 +57,11 @@ public class QrCodeCaptureActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.qr_code_capture_activity);
+
+        scanMode = getIntent().getIntExtra(
+                EXTRA_SCAN_MODE,
+                MODE_IMPORT_KEY
+        );
 
         barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);
         barcodeScannerView.setStatusText(getString(R.string.import_qr_code_text));
@@ -64,9 +82,36 @@ public class QrCodeCaptureActivity extends FragmentActivity {
     }
 
     private void init(CompoundBarcodeView barcodeScannerView, Intent intent, Bundle savedInstanceState) {
+
         capture = new CaptureManager(this, barcodeScannerView);
         capture.initializeFromIntent(intent, savedInstanceState);
-        capture.decode();
+
+        barcodeScannerView.decodeContinuous(new BarcodeCallback() {
+            @Override
+            public void barcodeResult(BarcodeResult result) {
+
+                if (result == null || result.getText() == null) {
+                    return;
+                }
+
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(
+                        "SCAN_RESULT",
+                        result.getText()
+                );
+
+                setResult(
+                        Activity.RESULT_OK,
+                        resultIntent
+                );
+
+                finish();
+            }
+
+            @Override
+            public void possibleResultPoints(List<ResultPoint> resultPoints) {
+            }
+        });
     }
 
     @Override
@@ -122,4 +167,6 @@ public class QrCodeCaptureActivity extends FragmentActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return barcodeScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
+
+
 }
