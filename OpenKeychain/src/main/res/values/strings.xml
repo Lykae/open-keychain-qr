@@ -1584,4 +1584,8 @@
     <string name="share_key_clipboard">Share key via clipboard</string>
     <string name="share_key">Share key</string>
 
+
+    <!-- QR -->
+    <string name="btn_show_qr_code">Share QR code</string>
+
 </resources>

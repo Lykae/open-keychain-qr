@@ -63,6 +63,7 @@ public class EncryptTextFragment
     public static final String ARG_RETURN_PROCESS_TEXT = "return_process_text";
 
     private boolean mShareAfterEncrypt;
+    private boolean mShowQrAfterEncrypt = false;
     private boolean mReturnProcessTextAfterEncrypt;
     private boolean mUseCompression;
     private boolean mSelfEncrypt;
@@ -201,6 +202,12 @@ public class EncryptTextFragment
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mShareAfterEncrypt = true;
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
+                break;
+            }
+            case R.id.encrypt_qr_show: {
+                hideKeyboard();
+                mShareAfterEncrypt = false;
                 cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
@@ -375,6 +382,11 @@ public class EncryptTextFragment
 
         if (mShareAfterEncrypt) {
             // Share encrypted message/file
+            startActivity(Intent.createChooser(createSendIntent(result.getResultBytes()),
+                    getString(R.string.title_share_message)));
+        } else if (mShowQrAfterEncrypt) {
+            // Show encrypted message/file QR
+            //TODO show qr
             startActivity(Intent.createChooser(createSendIntent(result.getResultBytes()),
                     getString(R.string.title_share_message)));
         } else if (mReturnProcessTextAfterEncrypt) {

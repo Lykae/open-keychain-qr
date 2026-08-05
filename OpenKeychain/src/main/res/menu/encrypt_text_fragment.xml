@@ -18,6 +18,13 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/encrypt_qr_show"
+        android:title="@string/btn_show_qr_code"
+        android:icon="@drawable/ic_action_qr_show_24dp"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/encrypt_share"
         android:title="@string/btn_share_encrypted_signed"
         android:icon="@drawable/ic_action_encrypt_share_24dp"
