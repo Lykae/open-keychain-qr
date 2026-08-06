@@ -180,8 +180,6 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
                     "Image error: " + e.getMessage(),
                     Toast.LENGTH_LONG
             ).show();
-
-            e.printStackTrace();
         }
     }
 
@@ -231,7 +229,11 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
 
                 })
                 .addOnFailureListener(e ->
-                        e.printStackTrace()
+                        Toast.makeText(
+                                this,
+                                "Scan error: " + e.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show()
                 );
     }
 
@@ -343,7 +345,12 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
             } catch (ExecutionException |
                      InterruptedException e) {
 
-                e.printStackTrace();
+                Toast.makeText(
+                        this,
+                        "Scanner error: " + e.getMessage(),
+                        Toast.LENGTH_LONG
+                ).show();
+                finish();
             }
 
 
