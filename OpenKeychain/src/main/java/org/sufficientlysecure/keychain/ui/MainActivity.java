@@ -70,8 +70,8 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                 .withIdentifier(ID_KEYS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock)
                                 .withIdentifier(ID_ENCRYPT_DECRYPT).withSelectable(false),
-                        new PrimaryDrawerItem().withName(R.string.title_api_registered_apps).withIcon(CommunityMaterial.Icon.cmd_apps)
-                                .withIdentifier(ID_APPS).withSelectable(false),
+                        //new PrimaryDrawerItem().withName(R.string.title_api_registered_apps).withIcon(CommunityMaterial.Icon.cmd_apps)
+                        //        .withIdentifier(ID_APPS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_backup).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
                                 .withIdentifier(ID_BACKUP).withSelectable(false),
                         new DividerDrawerItem(),
