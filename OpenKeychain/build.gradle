@@ -17,7 +17,7 @@ dependencies {
 
     // JCenter etc.
     implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
-    implementation 'com.google.zxing:core:3.4.0'
+    implementation 'com.google.zxing:core:3.5.3'
     implementation 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.14.9'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.14.9'
@@ -84,6 +84,13 @@ dependencies {
 
     // for debugging the db. don't enable by default, this will expose the database no the network!
     // debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
+
+    // new qr scanner
+    implementation "androidx.camera:camera-camera2:1.4.2"
+    implementation "androidx.camera:camera-lifecycle:1.4.2"
+    implementation "androidx.camera:camera-view:1.4.2"
+
+    implementation "com.google.mlkit:barcode-scanning:17.3.0"
 }
 
 android {
@@ -91,7 +98,7 @@ android {
     namespace 'org.sufficientlysecure.keychain'
 
     defaultConfig {
-        minSdkVersion 15
+        minSdk 21
         targetSdkVersion 34
         versionCode 60400
         versionName "6.0.4"

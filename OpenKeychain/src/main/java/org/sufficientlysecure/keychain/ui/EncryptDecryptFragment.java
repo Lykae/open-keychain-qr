@@ -196,7 +196,7 @@ public class EncryptDecryptFragment extends Fragment {
                 && resultCode == Activity.RESULT_OK
                 && data != null) {
 
-            String qrText = data.getStringExtra("SCAN_RESULT");
+            String qrText = data.getStringExtra("qr_result");
 
             if (qrText == null) {
                 return;

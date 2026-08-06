@@ -46,7 +46,9 @@ public class QrCodeUtils {
     public static Bitmap getQRCodeBitmap(final Uri uri, final int size) {
         // for URIs we want alphanumeric encoding to save space, thus make everything upper case!
         // zxing will then select Mode.ALPHANUMERIC internally
-        return getQRCodeBitmap(uri.toString().toUpperCase(Locale.ENGLISH), size);
+        //return getQRCodeBitmap(uri.toString().toUpperCase(Locale.ENGLISH), size);
+
+        return getQRCodeBitmap(uri.toString(), size);
     }
 
     /**
@@ -63,7 +65,7 @@ public class QrCodeUtils {
             if (bitmap == null) {
 
                 Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
-                hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+                hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.Q);
                 BitMatrix result = new QRCodeWriter().encode(input, BarcodeFormat.QR_CODE, size,
                         size, hints);
 
@@ -74,7 +76,7 @@ public class QrCodeUtils {
                 for (int y = 0; y < height; y++) {
                     final int offset = y * width;
                     for (int x = 0; x < width; x++) {
-                        pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.TRANSPARENT;
+                        pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.WHITE;
                     }
                 }
 

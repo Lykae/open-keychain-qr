@@ -1,172 +1,180 @@
-/*
- * Copyright (C) 2017 Schürmann & Breitmoser GbR
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.sufficientlysecure.keychain.ui;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ExperimentalGetImage;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageProxy;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
 import androidx.core.content.ContextCompat;
-import android.view.KeyEvent;
 
-import com.google.zxing.ResultPoint;
-import com.journeyapps.barcodescanner.BarcodeCallback;
-import com.journeyapps.barcodescanner.CaptureManager;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
-import com.journeyapps.barcodescanner.BarcodeResult;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.common.InputImage;
+
+import java.util.concurrent.ExecutionException;
 
 import org.sufficientlysecure.keychain.R;
 
-import java.util.List;
 
-public class QrCodeCaptureActivity extends FragmentActivity {
-    private CaptureManager capture;
-    private CompoundBarcodeView barcodeScannerView;
+public class QrCodeCaptureActivity extends AppCompatActivity {
 
     public static final String EXTRA_SCAN_MODE = "scan_mode";
-    public static final int MODE_IMPORT_KEY = 0;
     public static final int MODE_DECRYPT_MESSAGE = 1;
-    private int scanMode = MODE_IMPORT_KEY;
 
-    public static final int MY_PERMISSIONS_REQUEST_CAMERA = 42;
+    private boolean scanned = false;
+
+    private BarcodeScanner scanner;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         setContentView(R.layout.qr_code_capture_activity);
 
-        scanMode = getIntent().getIntExtra(
-                EXTRA_SCAN_MODE,
-                MODE_IMPORT_KEY
-        );
+        PreviewView previewView = findViewById(R.id.preview_view);
 
-        barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);
-        barcodeScannerView.setStatusText(getString(R.string.import_qr_code_text));
+        scanner = BarcodeScanning.getClient();
 
-        if (savedInstanceState != null) {
-            init(barcodeScannerView, getIntent(), savedInstanceState);
-        }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+        ) != getPackageManager().PERMISSION_GRANTED) {
 
-        // check Android 6 permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
-            init(barcodeScannerView, getIntent(), null);
-        } else {
-            ActivityCompat.requestPermissions(this,
+            ActivityCompat.requestPermissions(
+                    this,
                     new String[]{Manifest.permission.CAMERA},
-                    MY_PERMISSIONS_REQUEST_CAMERA);
+                    100
+            );
+
+        } else {
+            startCamera(previewView);
         }
     }
 
-    private void init(CompoundBarcodeView barcodeScannerView, Intent intent, Bundle savedInstanceState) {
 
-        capture = new CaptureManager(this, barcodeScannerView);
-        capture.initializeFromIntent(intent, savedInstanceState);
+    @OptIn(markerClass = ExperimentalGetImage.class)
+    private void startCamera(PreviewView previewView) {
 
-        barcodeScannerView.decodeContinuous(new BarcodeCallback() {
-            @Override
-            public void barcodeResult(BarcodeResult result) {
+        ListenableFuture<ProcessCameraProvider> future =
+                ProcessCameraProvider.getInstance(this);
 
-                if (result == null || result.getText() == null) {
-                    return;
-                }
 
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra(
-                        "SCAN_RESULT",
-                        result.getText()
+        future.addListener(() -> {
+
+            try {
+
+                ProcessCameraProvider provider = future.get();
+
+
+                Preview preview =
+                        new Preview.Builder()
+                                .build();
+
+
+                preview.setSurfaceProvider(
+                        previewView.getSurfaceProvider()
                 );
 
-                setResult(
-                        Activity.RESULT_OK,
-                        resultIntent
+
+                ImageAnalysis analysis =
+                        new ImageAnalysis.Builder()
+                                .setBackpressureStrategy(
+                                        ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
+                                )
+                                .build();
+
+
+                analysis.setAnalyzer(
+                        ContextCompat.getMainExecutor(this),
+                        this::analyze
                 );
 
+
+                provider.unbindAll();
+
+
+                provider.bindToLifecycle(
+                        this,
+                        CameraSelector.DEFAULT_BACK_CAMERA,
+                        preview,
+                        analysis
+                );
+
+
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+        }, ContextCompat.getMainExecutor(this));
+    }
+
+    private void handleBarcodes(java.util.List<Barcode> barcodes) {
+
+        if (scanned || barcodes.isEmpty()) {
+            return;
+        }
+
+        for (Barcode barcode : barcodes) {
+
+            String value = barcode.getRawValue();
+
+            if (value != null) {
+
+                scanned = true;
+
+                //Toast.makeText(
+                //        this,
+                //        "QR: " + value,
+                //        Toast.LENGTH_LONG
+                //).show();
+
+                Intent result = new Intent();
+                result.putExtra("qr_result", value);
+                setResult(RESULT_OK, result);
                 finish();
-            }
 
-            @Override
-            public void possibleResultPoints(List<ResultPoint> resultPoints) {
-            }
-        });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_CAMERA: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted
-                    init(barcodeScannerView, getIntent(), null);
-                } else {
-                    setResult(Activity.RESULT_CANCELED);
-                    finish();
-                }
+                break;
             }
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (capture != null) {
-            capture.onResume();
+    @ExperimentalGetImage
+    private void analyze(ImageProxy imageProxy) {
+
+        Image mediaImage = imageProxy.getImage();
+
+        if (mediaImage == null) {
+            imageProxy.close();
+            return;
         }
+
+        InputImage input =
+                InputImage.fromMediaImage(
+                        mediaImage,
+                        imageProxy.getImageInfo().getRotationDegrees()
+                );
+
+        scanner.process(input)
+                .addOnSuccessListener(this::handleBarcodes)
+                .addOnCompleteListener(task ->
+                        imageProxy.close()
+                );
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (capture != null) {
-            capture.onPause();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (capture != null) {
-            capture.onDestroy();
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (capture != null) {
-            capture.onSaveInstanceState(outState);
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return barcodeScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
-    }
-
-
 }
