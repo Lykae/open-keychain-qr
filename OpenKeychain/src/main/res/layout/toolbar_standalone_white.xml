@@ -9,6 +9,6 @@
 
     <include
         android:id="@+id/toolbar_inner_layout"
-        layout="@layout/toolbar_inner_layout_white" />
+        layout="@layout/toolbar_inner_layout" />
 
 </RelativeLayout>

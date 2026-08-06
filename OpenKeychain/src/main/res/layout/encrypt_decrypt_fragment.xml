@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,14 +10,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp">
+        android:paddingTop="16dp"
+        android:paddingRight="16dp">
 
         <TextView
             style="@style/SectionHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/section_encrypt" />
+            android:text="@string/section_encrypt"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <TextView
             android:id="@+id/encrypt_files"
@@ -24,16 +26,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:drawablePadding="8dp"
             android:drawableRight="@drawable/ic_folder_grey_24dp"
+            android:drawablePadding="8dp"
+            android:drawableTint="?android:attr/textColorPrimary"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:text="@string/btn_encrypt_files"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dip"
+            android:layout_height="1dp"
             android:background="?android:attr/listDivider" />
 
         <TextView
@@ -42,19 +46,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:drawablePadding="8dp"
             android:drawableRight="@drawable/ic_comment_text_grey600_24dp"
+            android:drawablePadding="8dp"
+            android:drawableTint="?android:attr/textColorPrimary"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:text="@string/btn_encrypt_text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <TextView
             style="@style/SectionHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/section_decrypt" />
+            android:text="@string/section_decrypt"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <TextView
             android:id="@+id/decrypt_files"
@@ -62,44 +69,57 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:drawablePadding="8dp"
             android:drawableRight="@drawable/ic_folder_grey_24dp"
+            android:drawablePadding="8dp"
+            android:drawableTint="?android:attr/textColorPrimary"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:text="@string/btn_decrypt_files"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dip"
+            android:layout_height="1dp"
             android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/decrypt_from_clipboard"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_height="wrap_content"
             android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
             android:orientation="horizontal"
+            android:paddingRight="8dp"
             tools:ignore="UseCompoundDrawables">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:text="@string/btn_decrypt_clipboard"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?android:attr/textColorPrimary" />
 
             <ImageView
                 android:id="@+id/clipboard_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:paddingLeft="8dp"
-                android:src="@drawable/ic_content_paste_grey_24dp" />
+                android:src="@drawable/ic_content_paste_grey_24dp"
+                app:tint="?android:attr/textColorPrimary"
+                android:paddingRight="4dp"/>
 
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
 
         <TextView
             android:id="@+id/decrypt_qr_code"
@@ -107,12 +127,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:drawablePadding="8dp"
             android:drawableRight="@drawable/ic_qrcode_white_24dp"
+            android:drawablePadding="8dp"
+            android:drawableTint="?android:attr/textColorPrimary"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:text="@string/btn_decrypt_qr_code"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorPrimary" />
 
     </LinearLayout>
 

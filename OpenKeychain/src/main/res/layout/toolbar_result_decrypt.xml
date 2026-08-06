@@ -12,7 +12,7 @@
         layout="@layout/toolbar_inner_layout_white" />
 
     <LinearLayout
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/toolbar_inner_layout"
         android:id="@+id/result_main_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"

@@ -18,5 +18,9 @@
         <attr name="colorTabTextSelected" format="color" />
         <attr name="colorTabIndicator" format="color" />
         <attr name="sectionHeaderDrawable" format="reference" />
+        <attr name="colorTextPrimary" format="color"/>
+        <attr name="colorIcon" format="color"/>
+        <attr name="colorBackground" format="color"/>
+        <attr name="colorDivider" format="color"/>
     </declare-styleable>
 </resources>

@@ -8,7 +8,7 @@
         android:icon="@drawable/ic_action_encrypt_paste_24dp"
         android:orderInCategory="1"
         android:visible="false"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/encrypt_copy"
