@@ -746,22 +746,22 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
             }
         }
 
-        if (mPreviousColor == 0 || mPreviousColor == color) {
-            appBarLayout.setBackgroundColor(color);
-            collapsingToolbarLayout.setContentScrimColor(color);
-            collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
-            mPreviousColor = color;
-        } else {
-            ObjectAnimator colorFade =
-                    ObjectAnimator.ofObject(appBarLayout, "backgroundColor",
-                            new ArgbEvaluator(), mPreviousColor, color);
-            collapsingToolbarLayout.setContentScrimColor(color);
-            collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
-
-            colorFade.setDuration(1200);
-            colorFade.start();
-            mPreviousColor = color;
-        }
+        //if (mPreviousColor == 0 || mPreviousColor == color) {
+        //    appBarLayout.setBackgroundColor(color);
+        //    collapsingToolbarLayout.setContentScrimColor(color);
+        //    collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
+        //    mPreviousColor = color;
+        //} else {
+        //    ObjectAnimator colorFade =
+        //            ObjectAnimator.ofObject(appBarLayout, "backgroundColor",
+        //                    new ArgbEvaluator(), mPreviousColor, color);
+        //    collapsingToolbarLayout.setContentScrimColor(color);
+        //    collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
+//
+        //    colorFade.setDuration(1200);
+        //    colorFade.start();
+        //    mPreviousColor = color;
+        //}
 
         statusImage.setAlpha(80);
     }
