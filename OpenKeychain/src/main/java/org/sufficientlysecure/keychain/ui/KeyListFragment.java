@@ -231,7 +231,7 @@
             if (activity == null) {
                 throw new NullPointerException("Activity must be bound!");
             }
-            activity.setTitle(R.string.app_name);
+            activity.setTitle(R.string.title_keys);
     
             // We have a menu item to show in action bar.
             setHasOptionsMenu(true);

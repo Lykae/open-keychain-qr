@@ -29,8 +29,8 @@
             android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:overScrollMode="always"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:theme="@style/ThemeOverlay.KeyChain.ActionBar"
+            app:popupTheme="?attr/popupOverlayStyle"
             tools:ignore="UnusedAttribute"
             android:transitionGroup="false"
             android:touchscreenBlocksFocus="false" />

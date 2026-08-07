@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- ========================================================= -->
-    <!-- LIGHT THEME -->
-    <!-- ========================================================= -->
-
     <style name="Base.Theme.Keychain.Light" parent="Theme.AppCompat.Light">
 
         <!-- Primary -->
-        <item name="colorPrimary">#37474F</item>
+        <item name="colorPrimary">#d1d1d1</item>
         <item name="colorPrimaryDark">#263238</item>
         <item name="colorAccent">#00897B</item>
 
@@ -18,7 +14,7 @@
 
         <!-- Toolbar -->
         <item name="colorBrightToolbar">#FFFFFF</item>
-        <item name="popupOverlayStyle">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="colorToolbar">#d1d1d1</item>
 
         <!-- Floating Action Button -->
         <item name="colorFab">#00897B</item>
@@ -40,6 +36,7 @@
 
         <item name="cardViewHeaderDrawable">@drawable/cardview_header</item>
         <item name="colorIcon">#212121</item>
+        <item name="popupOverlayStyle">@style/ThemeOverlay.KeyChain.Popup.Light</item>
 
         <!-- Text -->
         <item name="colorText">#212121</item>
@@ -64,11 +61,6 @@
 
     </style>
 
-
-    <!-- ========================================================= -->
-    <!-- DARK THEME -->
-    <!-- ========================================================= -->
-
     <style name="Base.Theme.Keychain.Dark" parent="MaterialDrawerTheme.ActionBar">
 
         <!-- Primary -->
@@ -82,7 +74,7 @@
 
         <!-- Toolbar -->
         <item name="colorBrightToolbar">#FFFFFF</item>
-        <item name="popupOverlayStyle">@style/ThemeOverlay.AppCompat.Dark</item>
+        <item name="colorToolbar">#1f1f1f</item>
 
         <!-- Floating Action Button -->
         <item name="colorFab">#00BFA5</item>
@@ -104,6 +96,7 @@
 
         <item name="cardViewHeaderDrawable">@drawable/cardview_header</item>
         <item name="colorIcon">#FFFFFF</item>
+        <item name="popupOverlayStyle">@style/ThemeOverlay.KeyChain.Popup.Dark</item>
 
         <!-- Text -->
         <item name="colorText">#FFFFFF</item>

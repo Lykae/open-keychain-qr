@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:background="@color/transparent"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:theme="@style/ThemeOverlay.KeyChain.ActionBar"
+        app:popupTheme="?attr/popupOverlayStyle"
         tools:ignore="UnusedAttribute" />
 </merge>

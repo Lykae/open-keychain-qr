@@ -83,4 +83,56 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
+    <style name="Widget.Keychain.Spinner.DropDown.ActionBar"
+        parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
+
+        <item name="android:popupBackground">?attr/colorCardViewBackground</item>
+        <item name="android:textColor">?attr/colorText</item>
+
+    </style>
+
+    <style name="Widget.Keychain.AutoCompleteTextView"
+        parent="Widget.AppCompat.Light.AutoCompleteTextView">
+
+        <item name="android:popupBackground">?attr/colorCardViewBackground</item>
+        <item name="android:textColor">?attr/colorText</item>
+
+    </style>
+
+    <style name="ThemeOverlay.KeyChain.Popup.Light"
+        parent="ThemeOverlay.AppCompat.Light">
+
+        <item name="android:textColor">?attr/colorText</item>
+        <item name="android:popupBackground">?attr/colorPrimary</item>
+        <item name="colorBackground">?attr/colorPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.KeyChain.Popup.Dark"
+        parent="ThemeOverlay.AppCompat.Dark">
+
+        <item name="android:textColor">?attr/colorText</item>
+        <item name="android:popupBackground">?attr/colorPrimary</item>
+        <item name="colorBackground">?attr/colorPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.KeyChain.ActionBar"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <item name="colorControlNormal">?attr/colorIcon</item>
+        <item name="android:textColor">?attr/colorText</item>
+        <item name="android:textColorPrimary">?attr/colorText</item>
+        <item name="colorBackground">?attr/colorPrimary</item>
+        <item name="background">?attr/colorPrimary</item>
+
+    </style>
+
+
+    <style name="TextAppearance.Keychain.Headline" parent="TextAppearance.AppCompat.Headline">
+        <item name="android:textColor">?attr/colorText</item>
+        <item name="android:textColorHint">?android:textColorHint</item>
+        <item name="android:textColorHighlight">?android:textColorHighlight</item>
+        <item name="android:textColorLink">?android:textColorLink</item>
+        <item name="android:textSize">@dimen/abc_text_size_body_1_material</item>
+    </style>
+
 </resources>

@@ -1585,8 +1585,9 @@
     <string name="share_key">Share key</string>
 
 
-    <!-- QR -->
+    <!-- Custom -->
     <string name="btn_show_qr_code">Encrypt/Show QR code</string>
     <string name="btn_decrypt_qr_code">Decrypt from QR code</string>
+    <string name="title_keys">Keys</string>
 
 </resources>
