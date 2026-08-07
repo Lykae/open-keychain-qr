@@ -3,6 +3,7 @@ package org.sufficientlysecure.materialchips;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import android.app.Activity;
 import android.content.Context;
@@ -188,6 +189,11 @@ public abstract class ChipsInput<T extends FilterableItem> extends ScrollViewMax
 
     public void addChips(List<T> chips) {
         chipsAdapter.addChipsProgrammatically(chips);
+
+        chipsRecyclerView.post(() -> {
+            Objects.requireNonNull(chipsRecyclerView.getAdapter()).notifyDataSetChanged();
+            chipsRecyclerView.requestLayout();
+        });
     }
 
     public ChipsInputEditText getEditText() {

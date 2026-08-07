@@ -23,5 +23,6 @@
         <attr name="colorBackground" format="color"/>
         <attr name="colorDivider" format="color"/>
         <attr name="colorToolbar" format="color"/>
+        <attr name="colorChipViewBackground" format="color"/>
     </declare-styleable>
 </resources>
