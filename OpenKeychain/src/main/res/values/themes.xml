@@ -38,6 +38,7 @@
         <item name="colorIcon">#212121</item>
         <item name="popupOverlayStyle">@style/ThemeOverlay.KeyChain.Popup.Light</item>
         <item name="colorChipViewBackground">#d1d1d1</item>
+        <item name="colorDivider">#1F000000</item>
 
         <!-- Text -->
         <item name="colorText">#212121</item>
@@ -75,7 +76,7 @@
 
         <!-- Toolbar -->
         <item name="colorBrightToolbar">#FFFFFF</item>
-        <item name="colorToolbar">#1f1f1f</item>
+        <item name="colorToolbar">#1E1E1E</item>
 
         <!-- Floating Action Button -->
         <item name="colorFab">#00BFA5</item>
@@ -99,6 +100,7 @@
         <item name="colorIcon">#FFFFFF</item>
         <item name="popupOverlayStyle">@style/ThemeOverlay.KeyChain.Popup.Dark</item>
         <item name="colorChipViewBackground">#0d0d0d</item>
+        <item name="colorDivider">#33FFFFFF</item>
 
         <!-- Text -->
         <item name="colorText">#FFFFFF</item>

@@ -9,14 +9,15 @@
 
     <include
         android:id="@+id/toolbar_inner_layout"
-        layout="@layout/toolbar_inner_layout_white" />
+        layout="@layout/toolbar_inner_layout" />
 
     <LinearLayout
-        android:layout_below="@id/toolbar_inner_layout"
         android:id="@+id/result_main_layout"
+        android:layout_below="@id/toolbar_inner_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/colorLogBackground"
         tools:showIn="@layout/decrypt_text_fragment">
 
         <LinearLayout
@@ -38,17 +39,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/status_lock_open_24dp"
+                    android:tint="?attr/colorIcon"
                     android:layout_gravity="center_vertical" />
 
                 <TextView
                     android:id="@+id/result_encryption_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="?attr/colorText"
+                    android:textSize="16sp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     tools:text="Encryption status text" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -61,17 +65,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/status_signature_unverified_cutout_24dp"
+                    android:tint="?attr/colorIcon"
                     android:layout_gravity="center_vertical" />
 
                 <TextView
                     android:id="@+id/result_signature_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="?attr/colorText"
+                    android:textSize="16sp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     tools:text="Signature status text" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -79,9 +86,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/listPreferredItemHeight"
                 android:clickable="true"
+                android:focusable="true"
                 android:paddingLeft="4dp"
                 android:paddingRight="4dp"
-                android:background="?android:selectableItemBackground"
+                android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -95,34 +103,36 @@
 
                     <TextView
                         android:id="@+id/result_signature_name"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="?attr/colorText"
+                        android:textSize="16sp"
                         tools:text="Alice" />
 
                     <TextView
                         android:id="@+id/result_signature_email"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
+                        android:textColor="?attr/colorTertiaryText"
+                        android:textSize="14sp"
                         tools:text="alice@example.com" />
 
                 </LinearLayout>
 
                 <View
-                    android:layout_width="1dip"
+                    android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:gravity="right"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="?android:attr/listDivider" />
+                    android:background="?attr/colorDivider" />
 
                 <TextView
                     android:id="@+id/result_signature_action"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="?attr/colorText"
+                    android:textSize="16sp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="Show"
@@ -136,8 +146,8 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
+            android:layout_height="1dp"
+            android:background="?attr/colorDivider" />
 
     </LinearLayout>
 
