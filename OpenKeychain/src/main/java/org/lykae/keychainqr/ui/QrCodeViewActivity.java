@@ -17,28 +17,19 @@
 
 package org.lykae.keychainqr.ui;
 
-
-import androidx.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.cardview.widget.CardView;
 import android.widget.ImageView;
 
-import org.lykae.keychainqr.Constants;
 import org.lykae.keychainqr.R;
-import org.lykae.keychainqr.model.UnifiedKeyInfo;
 import org.lykae.keychainqr.ui.base.BaseActivity;
-import org.lykae.keychainqr.ui.keyview.UnifiedKeyInfoViewModel;
-import org.lykae.keychainqr.ui.util.KeyFormattingUtils;
 import org.lykae.keychainqr.ui.util.Notify;
-import org.lykae.keychainqr.ui.util.Notify.Style;
 import org.lykae.keychainqr.ui.util.QrCodeUtils;
 
-
 public class QrCodeViewActivity extends BaseActivity {
-    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
+
     public static final String EXTRA_TEXT = "text";
 
     private ImageView qrCodeImageView;
@@ -48,101 +39,55 @@ public class QrCodeViewActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setFullScreenDialogClose(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
+        setFullScreenDialogClose(v ->
+                ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
 
         qrCodeImageView = findViewById(R.id.qr_code_image);
-        CardView mQrCodeLayout = findViewById(R.id.qr_code_image_layout);
 
-        mQrCodeLayout.setOnClickListener(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
+        CardView qrCodeLayout = findViewById(R.id.qr_code_image_layout);
+        qrCodeLayout.setOnClickListener(v ->
+                ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
 
-        String text = getIntent().getStringExtra(EXTRA_TEXT);
+        String armoredKey = getIntent().getStringExtra(EXTRA_TEXT);
 
-        if (text != null) {
-            try {
-                qrCode = QrCodeUtils.getQRCodeBitmap(text, 0);
-
-                qrCodeImageView.post(() -> {
-                    Bitmap scaled = Bitmap.createScaledBitmap(
-                            qrCode,
-                            qrCodeImageView.getWidth(),
-                            qrCodeImageView.getWidth(),
-                            false
-                    );
-                    qrCodeImageView.setImageBitmap(scaled);
-                });
-
-            } catch (Exception e) {
-                Notify.create(this,
-                        "Message too large for QR",
-                        Style.ERROR).show();
-                finish();
-            }
-
+        if (armoredKey == null || armoredKey.trim().isEmpty()) {
+            Notify.create(this, "No public key supplied", Notify.Style.ERROR).show();
+            finish();
             return;
         }
 
-        if (!getIntent().hasExtra(EXTRA_MASTER_KEY_ID)) {
-            throw new IllegalArgumentException("Missing required extra master_key_id");
-        }
+        try {
+            // The QR contains the actual ASCII-armored OpenPGP public key.
+            qrCode = QrCodeUtils.getQRCodeBitmap(armoredKey, 0);
 
-        UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
-        viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
-        viewModel.getUnifiedKeyInfoLiveData(getApplicationContext()).observe(this, this::onLoadUnifiedKeyInfo);
+            qrCodeImageView.post(() -> {
+                if (qrCode == null || qrCodeImageView.getWidth() <= 0) {
+                    return;
+                }
 
-        qrCodeImageView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            if (qrCode != null) {
-                Bitmap scaled = Bitmap.createScaledBitmap(qrCode, qrCodeImageView.getWidth(), qrCodeImageView.getWidth(), false);
+                Bitmap scaled = Bitmap.createScaledBitmap(
+                        qrCode,
+                        qrCodeImageView.getWidth(),
+                        qrCodeImageView.getWidth(),
+                        false
+                );
+
                 qrCodeImageView.setImageBitmap(scaled);
-            }
-        });
-    }
+            });
 
-    //@Override
-    //public void onCreate(Bundle savedInstanceState) {
-    //    super.onCreate(savedInstanceState);
-//
-    //    setFullScreenDialogClose(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
-//
-    //    qrCodeImageView = findViewById(R.id.qr_code_image);
-    //    CardView mQrCodeLayout = findViewById(R.id.qr_code_image_layout);
-//
-    //    mQrCodeLayout.setOnClickListener(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
-//
-    //    if (!getIntent().hasExtra(EXTRA_MASTER_KEY_ID)) {
-    //        throw new IllegalArgumentException("Missing required extra master_key_id");
-    //    }
-//
-    //    UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
-    //    viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
-    //    viewModel.getUnifiedKeyInfoLiveData(getApplicationContext()).observe(this, this::onLoadUnifiedKeyInfo);
-//
-    //    qrCodeImageView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-    //        if (qrCode != null) {
-    //            Bitmap scaled = Bitmap.createScaledBitmap(qrCode, qrCodeImageView.getWidth(), qrCodeImageView.getWidth(), false);
-    //            qrCodeImageView.setImageBitmap(scaled);
-    //        }
-    //    });
-    //}
+        } catch (Exception e) {
+            Notify.create(
+                    this,
+                    "Public key is too large for a single QR code",
+                    Notify.Style.ERROR
+            ).show();
 
-    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
-        if (unifiedKeyInfo == null) {
-            Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
-            ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-            return;
+            finish();
         }
-
-        Uri uri = new Uri.Builder()
-                .scheme(Constants.FINGERPRINT_SCHEME)
-                .opaquePart(KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint()))
-                .build();
-        qrCode = QrCodeUtils.getQRCodeBitmap(uri, 0);
-
-        qrCodeImageView.requestLayout();
     }
 
     @Override
     protected void initLayout() {
         setContentView(R.layout.qr_code_activity);
     }
-
 }

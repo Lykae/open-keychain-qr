@@ -14,10 +14,10 @@
         android:title="@string/menu_manage_keys"
         app:showAsAction="never" />
 
-    <item
+    <!--<item
         android:id="@+id/menu_key_list_update_all_keys"
         android:title="@string/menu_update_all_keys"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/menu_key_list_debug_bench"

@@ -389,7 +389,6 @@ public class EncryptTextFragment
                     getString(R.string.title_share_message)));
         } else if (mShowQrAfterEncrypt) {
             // Show encrypted message/file QR
-            //TODO show qr
             Intent intent = new Intent(getActivity(), QrCodeViewActivity.class);
             intent.putExtra(
                     QrCodeViewActivity.EXTRA_TEXT,

@@ -157,11 +157,20 @@
             startActivityForResult(intent, REQUEST_DELETE);
         }
     
+        //private void multiSelectEncrypt(long[] keyIds) {
+        //    Intent intent = new Intent(getActivity(), EncryptFilesActivity.class);
+        //    intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
+        //    intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, keyIds);
+    //
+        //    startActivityForResult(intent, REQUEST_ACTION);
+        //}
+
         private void multiSelectEncrypt(long[] keyIds) {
-            Intent intent = new Intent(getActivity(), EncryptFilesActivity.class);
-            intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
-            intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, keyIds);
-    
+            Intent intent = new Intent(getActivity(), EncryptTextActivity.class);
+
+            intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
+            intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyIds);
+
             startActivityForResult(intent, REQUEST_ACTION);
         }
     
@@ -196,17 +205,17 @@
             mFab = view.findViewById(R.id.fab_main);
     
             FloatingActionButton fabQrCode = view.findViewById(R.id.fab_add_qr_code);
-            FloatingActionButton fabCloud = view.findViewById(R.id.fab_add_cloud);
+            //FloatingActionButton fabCloud = view.findViewById(R.id.fab_add_cloud);
             FloatingActionButton fabFile = view.findViewById(R.id.fab_add_file);
     
             fabQrCode.setOnClickListener(v -> {
                 mFab.collapse();
                 scanQrCode();
             });
-            fabCloud.setOnClickListener(v -> {
-                mFab.collapse();
-                searchCloud();
-            });
+            //fabCloud.setOnClickListener(v -> {
+            //    mFab.collapse();
+            //    searchCloud();
+            //});
             fabFile.setOnClickListener(v -> {
                 mFab.collapse();
                 importFile();
@@ -487,10 +496,10 @@
                     createKey();
                     return true;
                 }
-                case R.id.menu_key_list_update_all_keys: {
-                    updateAllKeys();
-                    return true;
-                }
+                //case R.id.menu_key_list_update_all_keys: {
+                //    updateAllKeys();
+                //    return true;
+                //}
                 case R.id.menu_key_list_debug_read: {
                     try {
                         KeychainDatabase.debugBackup(getActivity(), true);

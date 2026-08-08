@@ -323,6 +323,8 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Activity activity = getActivity();
+            ((DeleteKeyDialogActivity) activity)
+                    .showNormalDeleteDialog();
 
             final String CHOICE_REVOKE = getString(R.string.del_rev_dialog_choice_rev_upload);
             final String CHOICE_DELETE = getString(R.string.del_rev_dialog_choice_delete);
