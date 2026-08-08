@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.service.remote;
+package org.lykae.keychainqr.service.remote;
 
 interface IExtendedApiCallback {
     

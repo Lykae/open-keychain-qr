@@ -43,7 +43,7 @@
 
             </ViewAnimator>
 
-            <org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput
+            <org.lykae.keychainqr.ui.chips.EncryptRecipientChipsInput
                 android:id="@+id/recipient_list"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
 
             </ViewAnimator>
 
-            <org.sufficientlysecure.keychain.ui.widget.KeySpinner
+            <org.lykae.keychainqr.ui.widget.KeySpinner
                 android:id="@+id/sign_key_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

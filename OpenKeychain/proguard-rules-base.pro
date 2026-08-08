@@ -9,7 +9,7 @@
 
 -keepattributes **
 
--keep class org.sufficientlysecure.keychain.** { *; }
+-keep class org.lykae.keychainqr.** { *; }
 
 # fix bug, see https://github.com/BelooS/ChipsLayoutManager/issues/31
 -dontwarn com.beloo.widget.chipslayoutmanager.Orientation

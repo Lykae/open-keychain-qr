@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title_key_status" />
 
-            <org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView
+            <org.lykae.keychainqr.ui.keyview.view.KeyHealthView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/key_status_health"
@@ -41,7 +41,7 @@
                 android:layout_height="1dip"
                 android:background="?android:attr/listDivider" />
 
-            <org.sufficientlysecure.keychain.ui.keyview.view.KeyserverStatusView
+            <org.lykae.keychainqr.ui.keyview.view.KeyserverStatusView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/key_status_keyserver"
@@ -51,7 +51,7 @@
 
     </androidx.cardview.widget.CardView>
 
-    <org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView
+    <org.lykae.keychainqr.ui.keyview.view.IdentitiesCardView
         android:id="@+id/card_identities"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -71,7 +71,7 @@
         tools:text="look@my.amazin.horse"
         />
 
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+    <org.lykae.keychainqr.ui.widget.ToolableViewAnimator
         android:id="@+id/layout_animator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -577,6 +577,6 @@
 
         </LinearLayout>
 
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+    </org.lykae.keychainqr.ui.widget.ToolableViewAnimator>
 
 </LinearLayout>

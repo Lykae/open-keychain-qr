@@ -10,7 +10,7 @@
     <fragment
         android:id="@+id/list"
         android:layout_below="@id/toolbar_include"
-        android:name="org.sufficientlysecure.keychain.ui.LogDisplayFragment"
+        android:name="org.lykae.keychainqr.ui.LogDisplayFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>

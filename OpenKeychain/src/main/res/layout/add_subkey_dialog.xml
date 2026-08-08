@@ -22,7 +22,7 @@
                 android:text="@string/label_key_type" />
 
             <!-- custom spinner for fixing focus on first item in list at all times -->
-            <org.sufficientlysecure.keychain.ui.util.spinner.FocusFirstItemSpinner
+            <org.lykae.keychainqr.ui.util.spinner.FocusFirstItemSpinner
                 android:id="@+id/add_subkey_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

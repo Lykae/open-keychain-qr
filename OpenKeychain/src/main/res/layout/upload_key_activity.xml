@@ -43,7 +43,7 @@
 
                 <fragment
                     android:id="@+id/multi_user_ids_fragment"
-                    android:name="org.sufficientlysecure.keychain.ui.MultiUserIdsFragment"
+                    android:name="org.lykae.keychainqr.ui.MultiUserIdsFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 

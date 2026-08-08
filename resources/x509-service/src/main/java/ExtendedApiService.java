@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.service.remote;
+package org.lykae.keychainqr.service.remote;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
@@ -28,10 +28,10 @@ import javax.security.auth.callback.PasswordCallback;
 import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openssl.PEMWriter;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.PgpToX509;
-import org.sufficientlysecure.keychain.util.Log;
+import org.lykae.keychainqr.Constants;
+import org.lykae.keychainqr.pgp.PgpKeyHelper;
+import org.lykae.keychainqr.pgp.PgpToX509;
+import org.lykae.keychainqr.util.Log;
 
 import android.content.Intent;
 import android.os.IBinder;

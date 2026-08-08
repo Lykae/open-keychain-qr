@@ -41,7 +41,7 @@
 
         </LinearLayout>
 
-        <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        <org.lykae.keychainqr.ui.widget.ToolableViewAnimator
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/action_animator"
@@ -395,7 +395,7 @@
 
             </LinearLayout>
 
-        </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+        </org.lykae.keychainqr.ui.widget.ToolableViewAnimator>
 
     </LinearLayout>
 

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
  
-package org.sufficientlysecure.keychain.service.remote;
+package org.lykae.keychainqr.service.remote;
 
-import org.sufficientlysecure.keychain.service.remote.IExtendedApiCallback;
+import org.lykae.keychainqr.service.remote.IExtendedApiCallback;
 
 /**
  * All methods are oneway, which means they are asynchronous and non-blocking.

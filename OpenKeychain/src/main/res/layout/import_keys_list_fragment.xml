@@ -4,7 +4,7 @@
 
     <data>
         <import type="android.view.View" alias="V" />
-        <import type="org.sufficientlysecure.keychain.ui.ImportKeysListFragment" alias="I" />
+        <import type="org.lykae.keychainqr.ui.ImportKeysListFragment" alias="I" />
 
         <variable name="status" type="int" />
         <variable name="number" type="int" />

@@ -22,7 +22,7 @@
 
             <fragment
                 android:id="@+id/multi_certify_key_fragment"
-                android:name="org.sufficientlysecure.keychain.ui.CertifyKeyFragment"
+                android:name="org.lykae.keychainqr.ui.CertifyKeyFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </FrameLayout>

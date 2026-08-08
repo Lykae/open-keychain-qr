@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator xmlns:tools="http://schemas.android.com/tools"
+<org.lykae.keychainqr.ui.widget.ToolableViewAnimator xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:id="@+id/view_animator"
@@ -156,4 +156,4 @@
 
     </ScrollView>
 
-</org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+</org.lykae.keychainqr.ui.widget.ToolableViewAnimator>

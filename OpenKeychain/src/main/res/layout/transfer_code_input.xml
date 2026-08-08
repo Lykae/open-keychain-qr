@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <org.sufficientlysecure.keychain.ui.widget.PrefixedEditText
+        <org.lykae.keychainqr.ui.widget.PrefixedEditText
             android:id="@+id/transfer_code_block_1"
             android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"

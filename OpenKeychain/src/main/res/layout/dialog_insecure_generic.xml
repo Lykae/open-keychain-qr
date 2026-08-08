@@ -22,7 +22,7 @@
         tools:text="The key this message was sent by is using an outdated algorithm, and is no longer considered secure!\n\nThe algorithm in use is DSA 1024 bit, which has been considered insecure since 2010."
         />
 
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+    <org.lykae.keychainqr.ui.widget.ToolableViewAnimator
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -88,7 +88,7 @@
 
         </LinearLayout>
 
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+    </org.lykae.keychainqr.ui.widget.ToolableViewAnimator>
 
 
 </merge>

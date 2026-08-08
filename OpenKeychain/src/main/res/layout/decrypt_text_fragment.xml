@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+<org.lykae.keychainqr.ui.widget.ToolableViewAnimator
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
@@ -65,4 +65,4 @@
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
-</org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+</org.lykae.keychainqr.ui.widget.ToolableViewAnimator>

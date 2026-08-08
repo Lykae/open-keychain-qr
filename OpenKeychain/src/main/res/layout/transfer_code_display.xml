@@ -17,7 +17,7 @@
             The most reliable way to correctly size these I found was to put a transparent hint on them.
              Theoretically, this should be what the android:ems attribute is for - didn't work for me.
             -->
-        <org.sufficientlysecure.keychain.ui.widget.PrefixedEditText
+        <org.lykae.keychainqr.ui.widget.PrefixedEditText
             android:id="@+id/transfer_code_block_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

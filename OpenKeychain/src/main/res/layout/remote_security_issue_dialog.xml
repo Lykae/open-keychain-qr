@@ -72,7 +72,7 @@
 
     </LinearLayout>
 
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+    <org.lykae.keychainqr.ui.widget.ToolableViewAnimator
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/dialog_insecure_button_bar"
@@ -160,6 +160,6 @@
 
         </LinearLayout>
 
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+    </org.lykae.keychainqr.ui.widget.ToolableViewAnimator>
 
 </LinearLayout>

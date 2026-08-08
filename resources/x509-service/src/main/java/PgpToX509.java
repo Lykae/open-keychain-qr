@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.pgp;
+package org.lykae.keychainqr.pgp;
 
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
@@ -33,8 +33,8 @@ import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import org.lykae.keychainqr.Constants;
+import org.lykae.keychainqr.util.Log;
 
 import java.io.IOException;
 import java.math.BigInteger;

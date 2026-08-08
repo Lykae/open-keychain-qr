@@ -3,7 +3,7 @@
 
     <data>
         <import type="android.view.View" alias="V" />
-        <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
+        <import type="org.lykae.keychainqr.keyimport.ImportKeysListEntry" />
 
         <variable name="entry" type="ImportKeysListEntry" />
     </data>
