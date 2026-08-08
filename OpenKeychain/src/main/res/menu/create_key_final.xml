@@ -5,6 +5,7 @@
     <item
         android:id="@+id/menu_create_key_edit"
         android:title="@string/create_key_edit"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_mode_edit_white_24dp"
+        app:showAsAction="always" />
 
 </menu>

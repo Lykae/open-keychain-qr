@@ -68,7 +68,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
     TextView mNameEdit;
     TextView mEmailEdit;
-    CheckBox mUploadCheckbox;
+    //CheckBox mUploadCheckbox;
     View mBackButton;
     View mCreateButton;
     View mCustomKeyLayout;
@@ -88,7 +88,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
     // NOTE: Do not use more complicated pattern like defined in android.util.Patterns.EMAIL_ADDRESS
     // EMAIL_ADDRESS fails for mails with umlauts for example
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\S]+@[\\S]+\\.[a-z]+$");
+    //private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\S]+@[\\S]+\\.[a-z]+$");
 
     public static CreateKeyFinalFragment newInstance() {
         CreateKeyFinalFragment frag = new CreateKeyFinalFragment();
@@ -106,7 +106,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
         mNameEdit = view.findViewById(R.id.name);
         mEmailEdit = view.findViewById(R.id.email);
-        mUploadCheckbox = view.findViewById(R.id.create_key_upload);
+        //mUploadCheckbox = view.findViewById(R.id.create_key_upload);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mCreateButton = view.findViewById(R.id.create_key_next_button);
         mCustomKeyLayout = view.findViewById(R.id.custom_key_layout);
@@ -135,7 +135,7 @@ public class CreateKeyFinalFragment extends Fragment {
             mEmailEdit.setText(createKeyActivity.mEmail);
         }
 
-        checkEmailValidity();
+        //checkEmailValidity();
 
         mCreateButton.setOnClickListener(v -> createKey());
 
@@ -148,7 +148,7 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         });
 
-        mUploadCheckbox.setChecked(false);
+        //mUploadCheckbox.setChecked(false);
 
         return view;
     }
@@ -323,27 +323,27 @@ public class CreateKeyFinalFragment extends Fragment {
         return builder.build();
     }
 
-    private void checkEmailValidity() {
-        CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
-
-        boolean emailsValid = true;
-        if (!EMAIL_PATTERN.matcher(createKeyActivity.mEmail).matches()) {
-            emailsValid = false;
-        }
-        if (createKeyActivity.mAdditionalEmails != null && createKeyActivity.mAdditionalEmails.size() > 0) {
-            for (String mAdditionalEmail : createKeyActivity.mAdditionalEmails) {
-                if (!EMAIL_PATTERN.matcher(mAdditionalEmail).matches()) {
-                    emailsValid = false;
-                }
-            }
-        }
-        if (!emailsValid) {
-            mEmailEdit.setError(getString(R.string.create_key_final_email_valid_warning));
-            mEmailEdit.setOnClickListener(v -> {
-                mNameEdit.requestFocus(); // Workaround to remove focus from email
-            });
-        }
-    }
+    //private void checkEmailValidity() {
+    //    CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
+//
+    //    boolean emailsValid = true;
+    //    if (!EMAIL_PATTERN.matcher(createKeyActivity.mEmail).matches()) {
+    //        emailsValid = false;
+    //    }
+    //    if (createKeyActivity.mAdditionalEmails != null && createKeyActivity.mAdditionalEmails.size() > 0) {
+    //        for (String mAdditionalEmail : createKeyActivity.mAdditionalEmails) {
+    //            if (!EMAIL_PATTERN.matcher(mAdditionalEmail).matches()) {
+    //                emailsValid = false;
+    //            }
+    //        }
+    //    }
+    //    if (!emailsValid) {
+    //        mEmailEdit.setError(getString(R.string.create_key_final_email_valid_warning));
+    //        mEmailEdit.setOnClickListener(v -> {
+    //            mNameEdit.requestFocus(); // Workaround to remove focus from email
+    //        });
+    //    }
+    //}
 
     private void createKey() {
         CreateKeyActivity activity = (CreateKeyActivity) getActivity();
@@ -369,11 +369,11 @@ public class CreateKeyFinalFragment extends Fragment {
                     return;
                 }
 
-                if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
-                    // result will be displayed after upload
-                    uploadKey(result);
-                    return;
-                }
+                //if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
+                //    // result will be displayed after upload
+                //    uploadKey(result);
+                //    return;
+                //}
 
                 finishWithResult(result);
             }
@@ -458,11 +458,11 @@ public class CreateKeyFinalFragment extends Fragment {
                 // merge logs of createKey with moveToCard
                 saveKeyResult.getLog().add(result, 0);
 
-                if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
-                    // result will be displayed after upload
-                    uploadKey(saveKeyResult);
-                    return;
-                }
+                //if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
+                //    // result will be displayed after upload
+                //    uploadKey(saveKeyResult);
+                //    return;
+                //}
 
                 finishWithResult(saveKeyResult);
             }

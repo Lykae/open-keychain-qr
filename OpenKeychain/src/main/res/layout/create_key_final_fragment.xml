@@ -66,14 +66,14 @@
                 android:layout_height="1dip"
                 android:background="?android:attr/listDivider" />
 
-            <CheckBox
+            <!--<CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/create_key_upload"
-                android:id="@+id/create_key_upload" />
+                android:id="@+id/create_key_upload" />-->
 
             <View
                 android:layout_width="match_parent"
@@ -120,7 +120,7 @@
 
             </LinearLayout>
 
-            <TextView
+            <!--<TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -129,7 +129,7 @@
                 android:textColor="?attr/colorPrimary"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:drawableLeft="@drawable/create_key_robot"
-                android:drawablePadding="8dp" />
+                android:drawablePadding="8dp" />-->
 
         </LinearLayout>
     </ScrollView>
