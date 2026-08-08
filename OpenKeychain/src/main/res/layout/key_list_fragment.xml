@@ -81,6 +81,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
                         android:gravity="center"
+                        android:textColor="?attr/colorText"
                         tools:text="@string/btn_search_for_query" />
 
                 </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
@@ -100,7 +101,7 @@
             android:layout_marginRight="16dp"
             fab:fab_addButtonColorNormal="?attr/colorPrimary"
             fab:fab_addButtonColorPressed="?attr/colorPrimaryDark"
-            fab:fab_addButtonPlusIconColor="@color/icons"
+            fab:fab_addButtonPlusIconColor="?attr/colorText"
             fab:fab_addButtonSize="normal"
             fab:fab_expandDirection="up"
             fab:fab_labelStyle="@style/FabMenuStyle">

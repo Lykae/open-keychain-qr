@@ -67,7 +67,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         getApplicationContext().getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         int attrColorPrimary = typedValue.data;
         typedValue = new TypedValue();
-        getApplicationContext().getTheme().resolveAttribute(R.attr.textColor, typedValue, true);
+        getApplicationContext().getTheme().resolveAttribute(R.attr.colorText, typedValue, true);
         int attrColorText = typedValue.data;
 
 

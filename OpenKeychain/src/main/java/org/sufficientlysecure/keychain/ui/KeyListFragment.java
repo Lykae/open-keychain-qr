@@ -20,12 +20,14 @@
     
     import java.io.IOException;
     import java.util.List;
-    
+    import java.util.Objects;
+
     import android.animation.ObjectAnimator;
     import android.app.Activity;
     import android.content.Intent;
     import android.os.AsyncTask;
     import android.os.Bundle;
+    import android.util.TypedValue;
     import android.view.ActionMode;
     import android.view.LayoutInflater;
     import android.view.Menu;
@@ -33,11 +35,13 @@
     import android.view.MenuItem;
     import android.view.View;
     import android.view.ViewGroup;
+    import android.widget.AutoCompleteTextView;
     import android.widget.Button;
     import android.widget.ViewAnimator;
     
     import androidx.annotation.WorkerThread;
     import androidx.appcompat.widget.SearchView;
+    import androidx.core.content.ContextCompat;
     import androidx.core.view.MenuItemCompat;
     import androidx.fragment.app.FragmentActivity;
     import androidx.lifecycle.LiveData;
@@ -392,6 +396,15 @@
     
             // Execute this when searching
             searchView.setOnQueryTextListener(this);
+
+            TypedValue typedValue = new TypedValue();
+            requireContext().getTheme().resolveAttribute(R.attr.colorText, typedValue, true);
+            int attrColorText = typedValue.data;
+
+            AutoCompleteTextView searchText =
+                    searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+
+            searchText.setHintTextColor(attrColorText);
     
             // Erase search result without focus
             MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
