@@ -19,7 +19,9 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
@@ -61,22 +63,52 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
 
+        TypedValue typedValue = new TypedValue();
+        getApplicationContext().getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        int attrColorPrimary = typedValue.data;
+        typedValue = new TypedValue();
+        getApplicationContext().getTheme().resolveAttribute(R.attr.textColor, typedValue, true);
+        int attrColorText = typedValue.data;
+
+
+
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withHeader(R.layout.main_drawer_header)
                 .withToolbar(mToolbar)
+                .withSliderBackgroundColor(attrColorPrimary)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.nav_keys).withIcon(CommunityMaterial.Icon.cmd_key)
-                                .withIdentifier(ID_KEYS).withSelectable(false),
+                                .withIdentifier(ID_KEYS).withSelectable(false)
+                                .withTextColor(attrColorText)
+                                .withSelectedTextColor(attrColorText)
+                                .withIconColor(attrColorText)
+                                .withSelectedIconColor(attrColorText),
                         new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock)
-                                .withIdentifier(ID_ENCRYPT_DECRYPT).withSelectable(false),
+                                .withIdentifier(ID_ENCRYPT_DECRYPT).withSelectable(false)
+                                .withTextColor(attrColorText)
+                                .withSelectedTextColor(attrColorText)
+                                .withIconColor(attrColorText)
+                                .withSelectedIconColor(attrColorText),
                         //new PrimaryDrawerItem().withName(R.string.title_api_registered_apps).withIcon(CommunityMaterial.Icon.cmd_apps)
                         //        .withIdentifier(ID_APPS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_backup).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
-                                .withIdentifier(ID_BACKUP).withSelectable(false),
+                                .withIdentifier(ID_BACKUP).withSelectable(false)
+                                .withTextColor(attrColorText)
+                                .withSelectedTextColor(attrColorText)
+                                .withIconColor(attrColorText)
+                                .withSelectedIconColor(attrColorText),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withSelectable(false),
+                        new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withSelectable(false)
+                                .withTextColor(attrColorText)
+                                .withSelectedTextColor(attrColorText)
+                                .withIconColor(attrColorText)
+                                .withSelectedIconColor(attrColorText),
                         new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withSelectable(false)
+                                .withTextColor(attrColorText)
+                                .withSelectedTextColor(attrColorText)
+                                .withIconColor(attrColorText)
+                                .withSelectedIconColor(attrColorText)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
