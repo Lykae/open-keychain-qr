@@ -1,25 +1,22 @@
 /*
- * Copyright (C) 2017 Schürmann & Breitmoser GbR
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2017 Schürmann & Breitmoser GbR
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package org.sufficientlysecure.keychain.ui;
 
-
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +36,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.Toolbar;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
@@ -48,12 +46,12 @@ import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Preferences;
+
 import timber.log.Timber;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public static final int REQUEST_CODE_KEYSERVER_PREF = 0x00007005;
-    public static final int REQUEST_CODE_SMARTPGP_AUTHORITIES_PREF = 0x00007006;
     private static final int REQUEST_PERMISSION_READ_CONTACTS = 13;
 
     private static Preferences sPreferences;
@@ -62,9 +60,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sPreferences = Preferences.getPreferences(this);
+
         mThemeChanger = new ThemeChanger(this);
-        mThemeChanger.setThemes(R.style.Theme_Keychain_Light, R.style.Theme_Keychain_Dark);
+        mThemeChanger.setThemes(
+                R.style.Theme_Keychain_Light,
+                R.style.Theme_Keychain_Dark
+        );
         mThemeChanger.changeTheme();
+
         super.onCreate(savedInstanceState);
 
         setupToolbar();
@@ -84,12 +87,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * Hack to get Toolbar in PreferenceActivity. See http://stackoverflow.com/a/26614696
+     * Hack to get Toolbar in PreferenceActivity.
      */
     private void setupToolbar() {
         ViewGroup root = findViewById(android.R.id.content);
         LinearLayout content = (LinearLayout) root.getChildAt(0);
-        LinearLayout toolbarContainer = (LinearLayout) View.inflate(this, R.layout.preference_toolbar, null);
+        LinearLayout toolbarContainer =
+                (LinearLayout) View.inflate(this, R.layout.preference_toolbar, null);
 
         root.removeAllViews();
         toolbarContainer.addView(content);
@@ -98,22 +102,29 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         Toolbar toolbar = toolbarContainer.findViewById(R.id.toolbar);
 
         toolbar.setTitle(R.string.title_preferences);
+
         // noinspection deprecation, TODO use alternative in API level 21
-        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp));
+        toolbar.setNavigationIcon(
+                getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp)
+        );
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //What to do on back clicked
                 finish();
             }
         });
     }
 
     public static abstract class PresetPreferenceFragment extends PreferenceFragment {
+
         @Override
         public void addPreferencesFromResource(int preferencesResId) {
             // so that preferences are written to our preference file, not the default
-            Preferences.setPreferenceManagerFileAndMode(this.getPreferenceManager());
+            Preferences.setPreferenceManagerFileAndMode(
+                    this.getPreferenceManager()
+            );
+
             super.addPreferencesFromResource(preferencesResId);
         }
     }
@@ -125,9 +136,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * This fragment shows the Cloud Search preferences
+     * This fragment shows the Cloud Search preferences.
      */
-    public static class CloudSearchPrefsFragment extends PresetPreferenceFragment {
+    public static class CloudSearchPrefsFragment
+            extends PresetPreferenceFragment {
 
         private PreferenceScreen mKeyServerPreference = null;
 
@@ -135,75 +147,108 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.cloud_search_preferences);
 
-            mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
-            mKeyServerPreference.setSummary(keyserverSummary(getActivity()));
+            mKeyServerPreference =
+                    (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
 
-            mKeyServerPreference
-                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            mKeyServerPreference.setSummary(
+                    keyserverSummary(getActivity())
+            );
+
+            mKeyServerPreference.setOnPreferenceClickListener(
+                    new Preference.OnPreferenceClickListener() {
+                        @Override
                         public boolean onPreferenceClick(Preference preference) {
-                            Intent intent = new Intent(getActivity(),
-                                    SettingsKeyServerActivity.class);
-                            intent.putExtra(SettingsKeyServerActivity.EXTRA_KEY_SERVERS,
-                                    sPreferences.getKeyServers());
-                            startActivityForResult(intent, REQUEST_CODE_KEYSERVER_PREF);
+                            Intent intent = new Intent(
+                                    getActivity(),
+                                    SettingsKeyServerActivity.class
+                            );
+
+                            intent.putExtra(
+                                    SettingsKeyServerActivity.EXTRA_KEY_SERVERS,
+                                    sPreferences.getKeyServers()
+                            );
+
+                            startActivityForResult(
+                                    intent,
+                                    REQUEST_CODE_KEYSERVER_PREF
+                            );
+
                             return false;
                         }
-                    });
+                    }
+            );
         }
 
         @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        public void onActivityResult(
+                int requestCode,
+                int resultCode,
+                Intent data
+        ) {
             switch (requestCode) {
-                case REQUEST_CODE_KEYSERVER_PREF: {
-                    // update preference, in case it changed
-                    mKeyServerPreference.setSummary(keyserverSummary(getActivity()));
+                case REQUEST_CODE_KEYSERVER_PREF:
+                    mKeyServerPreference.setSummary(
+                            keyserverSummary(getActivity())
+                    );
                     break;
-                }
 
-                default: {
-                    super.onActivityResult(requestCode, resultCode, data);
+                default:
+                    super.onActivityResult(
+                            requestCode,
+                            resultCode,
+                            data
+                    );
                     break;
-                }
             }
         }
 
         public static String keyserverSummary(Context context) {
-            ArrayList<HkpKeyserverAddress> servers = sPreferences.getKeyServers();
-            String serverSummary = context.getResources().getQuantityString(
-                    R.plurals.n_keyservers, servers.size(), servers.size());
-            return serverSummary + "; " + context.getString(R.string.label_preferred) + ": " + sPreferences
-                    .getPreferredKeyserver().getUrl();
+            ArrayList<HkpKeyserverAddress> servers =
+                    sPreferences.getKeyServers();
+
+            String serverSummary =
+                    context.getResources().getQuantityString(
+                            R.plurals.n_keyservers,
+                            servers.size(),
+                            servers.size()
+                    );
+
+            return serverSummary
+                    + "; "
+                    + context.getString(R.string.label_preferred)
+                    + ": "
+                    + sPreferences.getPreferredKeyserver().getUrl();
         }
     }
 
     /**
-     * This fragment shows the PIN/password preferences
+     * This fragment shows the PIN/password preferences.
      */
-    public static class PassphrasePrefsFragment extends PresetPreferenceFragment {
+    public static class PassphrasePrefsFragment
+            extends PresetPreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.passphrase_preferences);
         }
     }
 
-    public static class ProxyPrefsFragment extends PresetPreferenceFragment {
+    public static class ProxyPrefsFragment
+            extends PresetPreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             new Initializer(this).initialize();
-
         }
 
         public static class Initializer {
+
             private SwitchPreference mUseTor;
             private SwitchPreference mUseNormalProxy;
             private EditTextPreference mProxyHost;
@@ -220,13 +265,35 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
 
             public void initialize() {
-                mFragment.addPreferencesFromResource(R.xml.proxy_preferences);
+                mFragment.addPreferencesFromResource(
+                        R.xml.proxy_preferences
+                );
 
-                mUseTor = (SwitchPreference) automaticallyFindPreference(Constants.Pref.USE_TOR_PROXY);
-                mUseNormalProxy = (SwitchPreference) automaticallyFindPreference(Constants.Pref.USE_NORMAL_PROXY);
-                mProxyHost = (EditTextPreference) automaticallyFindPreference(Constants.Pref.PROXY_HOST);
-                mProxyPort = (EditTextPreference) automaticallyFindPreference(Constants.Pref.PROXY_PORT);
-                mProxyType = (ListPreference) automaticallyFindPreference(Constants.Pref.PROXY_TYPE);
+                mUseTor = (SwitchPreference)
+                        automaticallyFindPreference(
+                                Constants.Pref.USE_TOR_PROXY
+                        );
+
+                mUseNormalProxy = (SwitchPreference)
+                        automaticallyFindPreference(
+                                Constants.Pref.USE_NORMAL_PROXY
+                        );
+
+                mProxyHost = (EditTextPreference)
+                        automaticallyFindPreference(
+                                Constants.Pref.PROXY_HOST
+                        );
+
+                mProxyPort = (EditTextPreference)
+                        automaticallyFindPreference(
+                                Constants.Pref.PROXY_PORT
+                        );
+
+                mProxyType = (ListPreference)
+                        automaticallyFindPreference(
+                                Constants.Pref.PROXY_TYPE
+                        );
+
                 initializeUseTorPref();
                 initializeUseNormalProxyPref();
                 initializeEditTextPreferences();
@@ -242,110 +309,164 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
 
             private void initializeUseTorPref() {
-                mUseTor.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        Activity activity = mFragment.getActivity();
-                        if ((Boolean) newValue) {
-                            boolean installed = OrbotHelper.isOrbotInstalled(activity);
-                            if (!installed) {
-                                Timber.d("Prompting to install Tor");
-                                OrbotHelper.getPreferenceInstallDialogFragment().show(activity.getFragmentManager(),
-                                        "installDialog");
-                                // don't let the user check the box until he's installed orbot
-                                return false;
-                            } else {
-                                disableNormalProxyPrefs();
-                                // let the enable tor box be checked
-                                return true;
+                mUseTor.setOnPreferenceChangeListener(
+                        new Preference.OnPreferenceChangeListener() {
+                            @Override
+                            public boolean onPreferenceChange(
+                                    Preference preference,
+                                    Object newValue
+                            ) {
+                                Activity activity = mFragment.getActivity();
+
+                                if ((Boolean) newValue) {
+                                    boolean installed =
+                                            OrbotHelper.isOrbotInstalled(
+                                                    activity
+                                            );
+
+                                    if (!installed) {
+                                        Timber.d("Prompting to install Tor");
+
+                                        OrbotHelper
+                                                .getPreferenceInstallDialogFragment()
+                                                .show(
+                                                        activity.getFragmentManager(),
+                                                        "installDialog"
+                                                );
+
+                                        return false;
+                                    } else {
+                                        disableNormalProxyPrefs();
+                                        return true;
+                                    }
+                                } else {
+                                    enableNormalProxyCheckbox();
+                                    return true;
+                                }
                             }
-                        } else {
-                            // we're unchecking Tor, so enable other proxy
-                            enableNormalProxyCheckbox();
-                            return true;
                         }
-                    }
-                });
+                );
             }
 
             private void initializeUseNormalProxyPref() {
-                mUseNormalProxy.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        if ((Boolean) newValue) {
-                            disableUseTorPrefs();
-                            enableNormalProxySettings();
-                        } else {
-                            enableUseTorPrefs();
-                            disableNormalProxySettings();
+                mUseNormalProxy.setOnPreferenceChangeListener(
+                        new Preference.OnPreferenceChangeListener() {
+                            @Override
+                            public boolean onPreferenceChange(
+                                    Preference preference,
+                                    Object newValue
+                            ) {
+                                if ((Boolean) newValue) {
+                                    disableUseTorPrefs();
+                                    enableNormalProxySettings();
+                                } else {
+                                    enableUseTorPrefs();
+                                    disableNormalProxySettings();
+                                }
+
+                                return true;
+                            }
                         }
-                        return true;
-                    }
-                });
+                );
             }
 
             private void initializeEditTextPreferences() {
                 mProxyHost.setSummary(mProxyHost.getText());
                 mProxyPort.setSummary(mProxyPort.getText());
 
-                mProxyHost.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        Activity activity = mFragment.getActivity();
-                        if (TextUtils.isEmpty((String) newValue)) {
-                            Notify.create(
-                                    activity,
-                                    R.string.pref_proxy_host_err_invalid,
-                                    Notify.Style.ERROR
-                            ).show();
-                            return false;
-                        } else {
-                            mProxyHost.setSummary((CharSequence) newValue);
-                            return true;
-                        }
-                    }
-                });
+                mProxyHost.setOnPreferenceChangeListener(
+                        new Preference.OnPreferenceChangeListener() {
+                            @Override
+                            public boolean onPreferenceChange(
+                                    Preference preference,
+                                    Object newValue
+                            ) {
+                                Activity activity =
+                                        mFragment.getActivity();
 
-                mProxyPort.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        Activity activity = mFragment.getActivity();
-                        try {
-                            int port = Integer.parseInt((String) newValue);
-                            if (port < 0 || port > 65535) {
-                                Notify.create(
-                                        activity,
-                                        R.string.pref_proxy_port_err_invalid,
-                                        Notify.Style.ERROR
-                                ).show();
-                                return false;
+                                if (TextUtils.isEmpty((String) newValue)) {
+                                    Notify.create(
+                                            activity,
+                                            R.string.pref_proxy_host_err_invalid,
+                                            Notify.Style.ERROR
+                                    ).show();
+
+                                    return false;
+                                } else {
+                                    mProxyHost.setSummary(
+                                            (CharSequence) newValue
+                                    );
+
+                                    return true;
+                                }
                             }
-                            // no issues, save port
-                            mProxyPort.setSummary("" + port);
-                            return true;
-                        } catch (NumberFormatException e) {
-                            Notify.create(
-                                    activity,
-                                    R.string.pref_proxy_port_err_invalid,
-                                    Notify.Style.ERROR
-                            ).show();
-                            return false;
                         }
-                    }
-                });
+                );
+
+                mProxyPort.setOnPreferenceChangeListener(
+                        new Preference.OnPreferenceChangeListener() {
+                            @Override
+                            public boolean onPreferenceChange(
+                                    Preference preference,
+                                    Object newValue
+                            ) {
+                                Activity activity =
+                                        mFragment.getActivity();
+
+                                try {
+                                    int port = Integer.parseInt(
+                                            (String) newValue
+                                    );
+
+                                    if (port < 0 || port > 65535) {
+                                        Notify.create(
+                                                activity,
+                                                R.string.pref_proxy_port_err_invalid,
+                                                Notify.Style.ERROR
+                                        ).show();
+
+                                        return false;
+                                    }
+
+                                    mProxyPort.setSummary("" + port);
+                                    return true;
+
+                                } catch (NumberFormatException e) {
+                                    Notify.create(
+                                            activity,
+                                            R.string.pref_proxy_port_err_invalid,
+                                            Notify.Style.ERROR
+                                    ).show();
+
+                                    return false;
+                                }
+                            }
+                        }
+                );
             }
 
             private void initializeProxyTypePreference() {
                 mProxyType.setSummary(mProxyType.getEntry());
 
-                mProxyType.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        CharSequence entry = mProxyType.getEntries()[mProxyType.findIndexOfValue((String) newValue)];
-                        mProxyType.setSummary(entry);
-                        return true;
-                    }
-                });
+                mProxyType.setOnPreferenceChangeListener(
+                        new Preference.OnPreferenceChangeListener() {
+                            @Override
+                            public boolean onPreferenceChange(
+                                    Preference preference,
+                                    Object newValue
+                            ) {
+                                CharSequence entry =
+                                        mProxyType.getEntries()[
+                                                mProxyType.findIndexOfValue(
+                                                        (String) newValue
+                                                )
+                                                ];
+
+                                mProxyType.setSummary(entry);
+                                return true;
+                            }
+                        }
+                );
             }
 
             private void disableNormalProxyPrefs() {
@@ -382,102 +503,90 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * This fragment shows the keyserver/wifi-only-sync/contacts sync preferences
+     * This fragment shows the keyserver/wifi-only-sync/contacts sync preferences.
      */
-    public static class SyncPrefsFragment extends PresetPreferenceFragment {
+    public static class SyncPrefsFragment
+            extends PresetPreferenceFragment {
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.sync_preferences);
-            findPreference(Constants.Pref.SYNC_KEYSERVER).setOnPreferenceChangeListener(
-                    (preference, newValue) -> true);
+
+            findPreference(Constants.Pref.SYNC_KEYSERVER)
+                    .setOnPreferenceChangeListener(
+                            (preference, newValue) -> true
+                    );
         }
 
         @Override
         public void onStop() {
             super.onStop();
-            KeyserverSyncManager.updateKeyserverSyncScheduleAsync(getActivity(), true);
+
+            KeyserverSyncManager.updateKeyserverSyncScheduleAsync(
+                    getActivity(),
+                    true
+            );
         }
     }
 
     /**
-     * This fragment shows experimental features
+     * This fragment shows experimental features.
+     *
+     * SmartPGP settings have been removed.
      */
-    public static class ExperimentalPrefsFragment extends PresetPreferenceFragment {
-
-        private PreferenceScreen mSmartPGPAuthoritiesPreference = null;
+    public static class ExperimentalPrefsFragment
+            extends PresetPreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.experimental_preferences);
+            addPreferencesFromResource(
+                    R.xml.experimental_preferences
+            );
 
-            initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
-
-            mSmartPGPAuthoritiesPreference = (PreferenceScreen) findPreference(Constants.Pref.EXPERIMENTAL_SMARTPGP_AUTHORITIES);
-
-            final KeyStore ks = SettingsSmartPGPAuthoritiesActivity.readKeystore(getActivity());
-            int size = 0;
-            try {
-                if (ks != null) {
-                    size = ks.size();
-                }
-            } catch (KeyStoreException e) {}
-
-            mSmartPGPAuthoritiesPreference.setSummary(getActivity().getResources().getQuantityString(R.plurals.n_authorities, size, size));
-
-            mSmartPGPAuthoritiesPreference
-                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                        public boolean onPreferenceClick(Preference preference) {
-                            Intent intent = new Intent(getActivity(),
-                                    SettingsSmartPGPAuthoritiesActivity.class);
-                            startActivityForResult(intent, REQUEST_CODE_SMARTPGP_AUTHORITIES_PREF);
-                            return false;
-                        }
-                    });
+            initializeTheme(
+                    (ListPreference) findPreference(
+                            Constants.Pref.THEME
+                    )
+            );
         }
 
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            switch (requestCode) {
-                case REQUEST_CODE_SMARTPGP_AUTHORITIES_PREF: {
-                    // update preference, in case it changed
-                    final KeyStore ks = SettingsSmartPGPAuthoritiesActivity.readKeystore(getActivity());
-                    int size = 0;
-                    try {
-                        if (ks != null) {
-                            size = ks.size();
+        private static void initializeTheme(
+                final ListPreference themePref
+        ) {
+            themePref.setSummary(
+                    themePref.getEntry()
+                            + "\n"
+                            + themePref.getContext().getString(
+                            R.string.label_experimental_settings_theme_summary
+                    )
+            );
+
+            themePref.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(
+                                Preference preference,
+                                Object newValue
+                        ) {
+                            themePref.setSummary(
+                                    newValue
+                                            + "\n"
+                                            + themePref.getContext().getString(
+                                            R.string.label_experimental_settings_theme_summary
+                                    )
+                            );
+
+                            ((SettingsActivity) themePref.getContext())
+                                    .recreate();
+
+                            return true;
                         }
-                    } catch (KeyStoreException e) {}
-
-                    mSmartPGPAuthoritiesPreference.setSummary(getActivity().getResources().getQuantityString(R.plurals.n_authorities, size, size));
-                    break;
-                }
-
-                default: {
-                    super.onActivityResult(requestCode, resultCode, data);
-                    break;
-                }
-            }
-        }
-
-        private static void initializeTheme(final ListPreference themePref) {
-            themePref.setSummary(themePref.getEntry() + "\n"
-                    + themePref.getContext().getString(R.string.label_experimental_settings_theme_summary));
-            themePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    themePref.setSummary(newValue + "\n"
-                            + themePref.getContext().getString(R.string.label_experimental_settings_theme_summary));
-
-                    ((SettingsActivity) themePref.getContext()).recreate();
-
-                    return true;
-                }
-            });
+                    }
+            );
         }
     }
 
