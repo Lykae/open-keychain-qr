@@ -17,9 +17,9 @@
         <item name="colorToolbar">#d1d1d1</item>
 
         <!-- Floating Action Button -->
-        <item name="colorFab">#00897B</item>
-        <item name="colorFabPressed">#00695C</item>
-        <item name="colorFabText">#FFFFFF</item>
+        <item name="colorFab">#949494</item>
+        <item name="colorFabPressed">#858585</item>
+        <item name="colorFabText">#121212</item>
         <item name="fabLabelBackgroundDrawable">@drawable/fab_label_background</item>
 
         <!-- Tabs -->
@@ -79,8 +79,8 @@
         <item name="colorToolbar">#1E1E1E</item>
 
         <!-- Floating Action Button -->
-        <item name="colorFab">#00BFA5</item>
-        <item name="colorFabPressed">#008577</item>
+        <item name="colorFab">#464747</item>
+        <item name="colorFabPressed">#464747</item>
         <item name="colorFabText">#FFFFFF</item>
         <item name="fabLabelBackgroundDrawable">@drawable/fab_label_background</item>
 

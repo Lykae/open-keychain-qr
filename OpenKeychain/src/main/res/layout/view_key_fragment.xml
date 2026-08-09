@@ -41,11 +41,11 @@
                 android:layout_height="1dip"
                 android:background="?android:attr/listDivider" />
 
-            <org.lykae.keychainqr.ui.keyview.view.KeyserverStatusView
+            <!--<org.lykae.keychainqr.ui.keyview.view.KeyserverStatusView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/key_status_keyserver"
-                />
+                />-->
 
         </LinearLayout>
 

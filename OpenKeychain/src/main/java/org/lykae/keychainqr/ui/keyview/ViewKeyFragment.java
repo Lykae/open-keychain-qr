@@ -61,7 +61,7 @@ import timber.log.Timber;
 public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener {
     private IdentitiesCardView identitiesCardView;
     private KeyHealthView keyStatusHealth;
-    private KeyserverStatusView keyserverStatusView;
+    //private KeyserverStatusView keyserverStatusView;
     private View keyStatusCardView;
 
     IdentityAdapter identitiesAdapter;
@@ -82,7 +82,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         identitiesCardView = view.findViewById(R.id.card_identities);
         keyStatusCardView = view.findViewById(R.id.subkey_status_card);
         keyStatusHealth = view.findViewById(R.id.key_status_health);
-        keyserverStatusView = view.findViewById(R.id.key_status_keyserver);
+        //keyserverStatusView = view.findViewById(R.id.key_status_keyserver);
 
         identitiesAdapter = new IdentityAdapter(requireContext(), new IdentityClickListener() {
             @Override
@@ -118,7 +118,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         KeyFragmentViewModel model = new ViewModelProvider(this).get(KeyFragmentViewModel.class);
 
         model.getIdentityInfo(context, unifiedKeyInfoLiveData).observe(getViewLifecycleOwner(), this::onLoadIdentityInfo);
-        model.getKeyserverStatus(context, unifiedKeyInfoLiveData).observe(getViewLifecycleOwner(), this::onLoadKeyMetadata);
+        //model.getKeyserverStatus(context, unifiedKeyInfoLiveData).observe(getViewLifecycleOwner(), this::onLoadKeyMetadata);
         model.getSubkeyStatus(context, unifiedKeyInfoLiveData).observe(getViewLifecycleOwner(), this::onLoadSubkeyStatus);
     }
 
@@ -265,20 +265,20 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         identitiesAdapter.setData(identityInfos);
     }
 
-    private void onLoadKeyMetadata(Key_metadata keyMetadata) {
-        if (keyMetadata == null) {
-            keyserverStatusView.setDisplayStatusUnknown();
-        } else if (keyMetadata.getLast_updated() != null) {
-            if (keyMetadata.getSeen_on_keyservers() != null && keyMetadata.getSeen_on_keyservers()) {
-                keyserverStatusView.setDisplayStatusPublished();
-            } else {
-                keyserverStatusView.setDisplayStatusNotPublished();
-            }
-            keyserverStatusView.setLastUpdated(keyMetadata.getLast_updated());
-        } else {
-            keyserverStatusView.setDisplayStatusUnknown();
-        }
-    }
+    //private void onLoadKeyMetadata(Key_metadata keyMetadata) {
+    //    if (keyMetadata == null) {
+    //        keyserverStatusView.setDisplayStatusUnknown();
+    //    } else if (keyMetadata.getLast_updated() != null) {
+    //        if (keyMetadata.getSeen_on_keyservers() != null && keyMetadata.getSeen_on_keyservers()) {
+    //            keyserverStatusView.setDisplayStatusPublished();
+    //        } else {
+    //            keyserverStatusView.setDisplayStatusNotPublished();
+    //        }
+    //        keyserverStatusView.setLastUpdated(keyMetadata.getLast_updated());
+    //    } else {
+    //        keyserverStatusView.setDisplayStatusUnknown();
+    //    }
+    //}
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

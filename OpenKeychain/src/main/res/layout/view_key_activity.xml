@@ -96,8 +96,8 @@
                             android:layout_width="64dp"
                             android:layout_height="64dp"
                             android:src="?attr/actionModeCopyDrawable"
-                            android:tint="?attr/colorIcon"
                             android:visibility="invisible"
+                            app:tint="?attr/colorIcon"
                             tools:visibility="visible"/>
                 </LinearLayout>
 
@@ -192,7 +192,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
-        android:src="@drawable/ic_qrcode_white_24dp"
+        android:src="@drawable/ic_check_white_24dp"
+        app:backgroundTint="?attr/colorFab"
         android:visibility="invisible"
         app:layout_anchor="@id/app_bar_layout"
         app:layout_anchorGravity="bottom|right|end"

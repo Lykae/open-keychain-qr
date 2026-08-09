@@ -230,13 +230,6 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
     @Override
     public ImportKeyringParcel createOperationInput() {
-
-        /*
-         * IMPORTANT:
-         *
-         * null means there is no keyserver involved.
-         * The keyring itself contains the key material.
-         */
         return ImportKeyringParcel.createImportKeyringParcel(
                 mKeyList,
                 null
@@ -245,12 +238,6 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
     @Override
     public void onCryptoOperationSuccess(ImportKeyResult result) {
-        /*
-         * Offline import is complete.
-         *
-         * Do NOT launch CertifyKeyActivity here. A public-key-only import
-         * should simply finish after the key has been imported locally.
-         */
         Intent data = new Intent();
         data.putExtra(OperationResult.EXTRA_RESULT, result);
         returnResult(data);

@@ -509,7 +509,7 @@
   <!--View key-->
   <string name="view_key_my_key">Nire Giltza</string>
   <string name="view_key_verified">Baieztatutako Giltza</string>
-  <string name="view_key_unverified">Baieztatugabe: Eskaneatu QR Kodea giltza baieztatzeko!</string>
+  <string name="view_key_unverified">Baieztatugabe</string>
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Gehitu giltza-zerbitzaria</string>
   <string name="edit_keyserver_dialog_title">Editatu giltza-zerbitzaria</string>

@@ -615,7 +615,7 @@
     <!-- View key -->
     <string name="view_key_my_key">"My Key"</string>
     <string name="view_key_verified">"Confirmed Key"</string>
-    <string name="view_key_unverified">"Unconfirmed: Scan QR Code to confirm key!"</string>
+    <string name="view_key_unverified">"Unconfirmed Key"</string>
 
     <!-- Add/Edit keyserver -->
     <string name="add_keyserver_dialog_title">"Add keyserver"</string>

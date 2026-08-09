@@ -99,7 +99,7 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
         View view = inflater.inflate(R.layout.certify_key_fragment, superContainer, false);
 
         certifyKeySpinner = view.findViewById(R.id.certify_key_spinner);
-        uploadKeyCheckbox = view.findViewById(R.id.sign_key_upload_checkbox);
+        //uploadKeyCheckbox = view.findViewById(R.id.sign_key_upload_checkbox);
         multiUserIdsFragment = (MultiUserIdsFragment)
                 getChildFragmentManager().findFragmentById(R.id.multi_user_ids_fragment);
 
@@ -140,9 +140,9 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
         CertifyActionsParcel.Builder actionsParcel = CertifyActionsParcel.builder(selectedKeyId);
         actionsParcel.addActions(certifyActions);
 
-        if (uploadKeyCheckbox.isChecked()) {
-            actionsParcel.setParcelableKeyServer(Preferences.getPreferences(getActivity()).getPreferredKeyserver());
-        }
+        //if (uploadKeyCheckbox.isChecked()) {
+        //    actionsParcel.setParcelableKeyServer(Preferences.getPreferences(getActivity()).getPreferredKeyserver());
+        //}
 
         // cache for next cryptoOperation loop
         CertifyActionsParcel certifyActionsParcel = actionsParcel.build();

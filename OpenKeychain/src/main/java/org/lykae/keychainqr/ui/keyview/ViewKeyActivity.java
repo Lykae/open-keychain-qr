@@ -99,7 +99,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
-            REQUEST_QR_KEY,
+            //REQUEST_QR_KEY,
             REQUEST_BACKUP,
             REQUEST_CERTIFY,
             REQUEST_DELETE
@@ -132,12 +132,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
     private FloatingActionButton floatingActionButton;
     private ImageView qrCodeView;
     private CardView qrCodeLayout;
-
-    /*
-     * This now stores the actual armored public key used for the QR,
-     * rather than a fingerprint.
-     */
     private String qrCodeLoaded;
+    private long qrCodeLoadedForKeyId = -1L;
 
     private UnifiedKeyInfo unifiedKeyInfo;
 
@@ -272,13 +268,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                 )
         );
 
-        /*
-         * Scan an actual public key from the QR.
-         * The scanner imports it locally rather than
-         * returning a fingerprint.
-         */
         floatingActionButton.setOnClickListener(
-                v -> scanQrCode()
+                v -> certifyFingerprint()
         );
 
         qrCodeLayout.setOnClickListener(
@@ -527,23 +518,23 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
      * There is no fingerprint comparison and no
      * keyserver lookup in this flow.
      */
-    private void scanQrCode() {
-
-        Intent scanQrCode =
-                new Intent(
-                        this,
-                        ImportKeysProxyActivity.class
-                );
-
-        scanQrCode.setAction(
-                ImportKeysProxyActivity.ACTION_SCAN_IMPORT
-        );
-
-        startActivityForResult(
-                scanQrCode,
-                REQUEST_QR_KEY
-        );
-    }
+    //private void scanQrCode() {
+//
+    //    Intent scanQrCode =
+    //            new Intent(
+    //                    this,
+    //                    ImportKeysProxyActivity.class
+    //            );
+//
+    //    scanQrCode.setAction(
+    //            ImportKeysProxyActivity.ACTION_SCAN_IMPORT
+    //    );
+//
+    //    startActivityForResult(
+    //            scanQrCode,
+    //            REQUEST_QR_KEY
+    //    );
+    //}
 
     private void certifyFingerprint() {
 
@@ -818,32 +809,32 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
         switch (requestCode) {
 
-            case REQUEST_QR_KEY: {
-
-                /*
-                 * The QR scanner now imports the key itself.
-                 *
-                 * There is intentionally no fingerprint
-                 * comparison here.
-                 */
-                if (data != null
-                        && data.hasExtra(
-                        OperationResult.EXTRA_RESULT)) {
-
-                    OperationResult result =
-                            data.getParcelableExtra(
-                                    OperationResult.EXTRA_RESULT
-                            );
-
-                    if (result != null) {
-                        result.createNotify(this).show();
-                    }
-
-                    return;
-                }
-
-                return;
-            }
+            //case REQUEST_QR_KEY: {
+//
+            //    /*
+            //     * The QR scanner now imports the key itself.
+            //     *
+            //     * There is intentionally no fingerprint
+            //     * comparison here.
+            //     */
+            //    if (data != null
+            //            && data.hasExtra(
+            //            OperationResult.EXTRA_RESULT)) {
+//
+            //        OperationResult result =
+            //                data.getParcelableExtra(
+            //                        OperationResult.EXTRA_RESULT
+            //                );
+//
+            //        if (result != null) {
+            //            result.createNotify(this).show();
+            //        }
+//
+            //        return;
+            //    }
+//
+            //    return;
+            //}
 
             case REQUEST_BACKUP: {
 
@@ -1145,23 +1136,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                     View.GONE
             );
 
-        } else if (unifiedKeyInfo.has_any_secret()) {
+        } else {
+            if (qrCodeLoadedForKeyId
+                    != unifiedKeyInfo.master_key_id()) {
 
-            statusImage.setVisibility(
-                    View.GONE
-            );
-
-            color =
-                    ContextCompat.getColor(
-                            this,
-                            R.color.key_flag_green
-                    );
-
-            /*
-             * QR is now generated from the complete local
-             * ASCII-armored public key.
-             */
-            if (qrCodeLoaded == null) {
                 loadQrCode(
                         unifiedKeyInfo.master_key_id()
                 );
@@ -1171,43 +1149,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                     View.VISIBLE
             );
 
-            RelativeLayout.LayoutParams statusParams =
-                    (RelativeLayout.LayoutParams)
-                            statusText.getLayoutParams();
-
-            statusParams.setMargins(
-                    FormattingUtils.dpToPx(
-                            this,
-                            48
-                    ),
-                    0,
-                    0,
-                    0
-            );
-
-            if (Build.VERSION.SDK_INT >=
-                    Build.VERSION_CODES.JELLY_BEAN_MR1) {
-
-                statusParams.setMarginEnd(0);
-            }
-
-            statusParams.addRule(
-                    RelativeLayout.LEFT_OF,
-                    R.id.view_key_qr_code_layout
-            );
-
-            statusText.setLayoutParams(
-                    statusParams
-            );
-
-            actionEncryptFile.setVisibility(
-                    View.VISIBLE
-            );
-
-            actionEncryptText.setVisibility(
-                    View.VISIBLE
-            );
-
             actionShare.setVisibility(
                     View.VISIBLE
             );
@@ -1216,47 +1157,38 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                     View.VISIBLE
             );
 
-            hideFab();
+            if (unifiedKeyInfo.has_encrypt_key()) {
 
-        } else {
-
-            actionEncryptFile.setVisibility(
-                    View.VISIBLE
-            );
-
-            actionEncryptText.setVisibility(
-                    View.VISIBLE
-            );
-
-            actionShare.setVisibility(
-                    View.VISIBLE
-            );
-
-            actionShareClipboard.setVisibility(
-                    View.VISIBLE
-            );
-
-            qrCodeLayout.setVisibility(
-                    View.GONE
-            );
-
-            if (unifiedKeyInfo.is_verified()) {
-
-                statusText.setText(
-                        R.string.view_key_verified
-                );
-
-                statusImage.setVisibility(
+                actionEncryptFile.setVisibility(
                         View.VISIBLE
                 );
 
-                KeyFormattingUtils.setStatusImage(
-                        this,
-                        statusImage,
-                        statusText,
-                        State.VERIFIED,
-                        R.color.icons,
-                        true
+                actionEncryptText.setVisibility(
+                        View.VISIBLE
+                );
+
+            } else {
+
+                actionEncryptFile.setVisibility(
+                        View.INVISIBLE
+                );
+
+                actionEncryptText.setVisibility(
+                        View.INVISIBLE
+                );
+            }
+            if (unifiedKeyInfo.has_any_secret()) {
+
+                statusText.setVisibility(
+                        View.VISIBLE
+                );
+
+                statusText.setText(
+                        R.string.view_key_my_key
+                );
+
+                statusImage.setVisibility(
+                        View.GONE
                 );
 
                 color =
@@ -1267,24 +1199,24 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
                 hideFab();
 
+            } else if (unifiedKeyInfo.is_verified()) {
+
+                statusText.setVisibility(View.GONE);
+                statusImage.setVisibility(View.GONE);
+
+                color =
+                        ContextCompat.getColor(
+                                this,
+                                R.color.key_flag_green
+                        );
+
+                hideFab();
+
             } else {
+                statusText.setVisibility(View.VISIBLE);
+                statusText.setText(R.string.view_key_unverified);
 
-                statusText.setText(
-                        R.string.view_key_unverified
-                );
-
-                statusImage.setVisibility(
-                        View.VISIBLE
-                );
-
-                KeyFormattingUtils.setStatusImage(
-                        this,
-                        statusImage,
-                        statusText,
-                        State.UNVERIFIED,
-                        R.color.icons,
-                        true
-                );
+                statusImage.setVisibility(View.GONE);
 
                 color =
                         ContextCompat.getColor(
@@ -1299,10 +1231,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
         statusImage.setAlpha(80);
     }
 
-    /**
-     * Generate a single QR containing the complete
-     * ASCII-armored public key.
-     */
     private void loadQrCode(final long masterKeyId) {
 
         AsyncTask<Void, Void, String> loadTask =
@@ -1353,10 +1281,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
                         try {
 
-                            /*
-                             * QrCodeUtils receives the actual
-                             * ASCII-armored public key.
-                             */
                             Bitmap qrCode =
                                     QrCodeUtils.getQRCodeBitmap(
                                             armoredKey,
@@ -1365,6 +1289,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
                             qrCodeLoaded =
                                     armoredKey;
+
+                            qrCodeLoadedForKeyId =
+                                    masterKeyId;
 
                             int size =
                                     ViewKeyActivity.this
@@ -1376,6 +1303,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                                         ViewKeyActivity.this
                                                 .qrCodeView
                                                 .getWidth();
+                            }
+
+                            if (size <= 0) {
+                                return;
                             }
 
                             Bitmap scaled =
@@ -1408,12 +1339,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
                             Timber.e(
                                     e,
-                                    "Public key is too large for one QR code"
+                                    "Unable to generate public key QR"
                             );
 
                             Notify.create(
                                     ViewKeyActivity.this,
-                                    "Public key is too large for one QR code",
+                                    "Unable to generate public key QR",
                                     Notify.Style.ERROR
                             ).show();
                         }
