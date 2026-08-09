@@ -1,5 +1,7 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+[KeychainQR](https://github.com/Lykae/open-keychain-qr) is a modified version of OpenKeychain.
+
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
 [OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
@@ -7,6 +9,9 @@
 License: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
+
+## Maintainer of this fork
+  * Lykae
 
 ## Main Developers
   * Dominik Schürmann (Maintainer)
