@@ -34,23 +34,23 @@ import java.util.concurrent.ExecutionException;
 
 import org.lykae.keychainqr.R;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-
-
 public class QrCodeCaptureActivity extends AppCompatActivity {
 
     public static final String EXTRA_SCAN_MODE = "scan_mode";
     public static final int MODE_DECRYPT_MESSAGE = 1;
 
+    /*
+     * Binary QR result.
+     */
+    public static final String EXTRA_QR_RESULT_BYTES =
+            "qr_result_bytes";
+
     private static final int PICK_IMAGE_REQUEST = 200;
+    private static final int CAMERA_REQUEST = 100;
 
     private BarcodeScanner scanner;
 
     private boolean scanned = false;
-
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,48 +65,18 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
                         )
                         .build();
 
-        scanner = BarcodeScanning.getClient(options);
+        scanner =
+                BarcodeScanning.getClient(options);
 
-        imagePickerLauncher =
-                registerForActivityResult(
-                        new ActivityResultContracts.StartActivityForResult(),
-                        result -> {
+        PreviewView previewView =
+                findViewById(R.id.preview_view);
 
-                            if (result.getResultCode() == RESULT_OK
-                                    && result.getData() != null) {
+        Button galleryButton =
+                findViewById(R.id.gallery_button);
 
-                                Uri uri =
-                                        result.getData().getData();
-
-                                if (uri != null) {
-
-                                    Toast.makeText(
-                                            this,
-                                            "Image selected",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-
-                                    scanImage(uri);
-
-                                }
-
-                            } else {
-
-                                Toast.makeText(
-                                        this,
-                                        "No image selected",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        });
-
-
-        PreviewView previewView = findViewById(R.id.preview_view);
-
-        Button galleryButton = findViewById(R.id.gallery_button);
-
-        galleryButton.setOnClickListener(v -> openGallery());
-
+        galleryButton.setOnClickListener(
+                v -> openGallery()
+        );
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -115,25 +85,93 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
 
             ActivityCompat.requestPermissions(
                     this,
-                    new String[]{Manifest.permission.CAMERA},
-                    100
+                    new String[]{
+                            Manifest.permission.CAMERA
+                    },
+                    CAMERA_REQUEST
             );
 
         } else {
+
             startCamera(previewView);
         }
     }
 
-
+    /**
+     * Open Android gallery/file picker.
+     */
     private void openGallery() {
 
         Intent intent =
                 new Intent(Intent.ACTION_GET_CONTENT);
 
         intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-        imagePickerLauncher.launch(intent);
+        intent.addCategory(
+                Intent.CATEGORY_OPENABLE
+        );
+
+        startActivityForResult(
+                Intent.createChooser(
+                        intent,
+                        "Select QR image"
+                ),
+                PICK_IMAGE_REQUEST
+        );
+    }
+
+    /**
+     * Receive the selected gallery image.
+     */
+    @Override
+    protected void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data) {
+
+        super.onActivityResult(
+                requestCode,
+                resultCode,
+                data
+        );
+
+        if (requestCode != PICK_IMAGE_REQUEST) {
+            return;
+        }
+
+        if (resultCode != RESULT_OK
+                || data == null) {
+
+            Toast.makeText(
+                    this,
+                    "No image selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        Uri uri =
+                data.getData();
+
+        if (uri == null) {
+
+            Toast.makeText(
+                    this,
+                    "Unable to open image",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        Toast.makeText(
+                this,
+                "Image selected",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        scanImage(uri);
     }
 
     private void scanImage(Uri uri) {
@@ -152,7 +190,6 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
                             uri
                     );
 
-
             Toast.makeText(
                     this,
                     "Image loaded: "
@@ -162,43 +199,44 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG
             ).show();
 
+            bitmap =
+                    resizeBitmap(bitmap);
 
-            // Resize first to avoid huge images slowing ML Kit
-            bitmap = resizeBitmap(bitmap);
-
-
-            // Try full image, center crop, and grid crops
             scanWithAutoCrop(bitmap);
-            scanBitmapGrid(bitmap);
 
+            scanBitmapGrid(bitmap);
 
         } catch (Exception e) {
 
             Toast.makeText(
                     this,
-                    "Image error: " + e.getMessage(),
+                    "Image error: "
+                            + e.getMessage(),
                     Toast.LENGTH_LONG
             ).show();
         }
     }
 
-    private Bitmap resizeBitmap(Bitmap bitmap) {
+    private Bitmap resizeBitmap(
+            Bitmap bitmap) {
 
         int maxSize = 1600;
 
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+        int width =
+                bitmap.getWidth();
 
-        float scale = Math.min(
-                (float) maxSize / width,
-                (float) maxSize / height
-        );
+        int height =
+                bitmap.getHeight();
 
+        float scale =
+                Math.min(
+                        (float) maxSize / width,
+                        (float) maxSize / height
+                );
 
         if (scale >= 1) {
             return bitmap;
         }
-
 
         return Bitmap.createScaledBitmap(
                 bitmap,
@@ -208,7 +246,12 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
         );
     }
 
-    private void scanBitmap(Bitmap bitmap) {
+    private void scanBitmap(
+            Bitmap bitmap) {
+
+        if (scanned) {
+            return;
+        }
 
         InputImage image =
                 InputImage.fromBitmap(
@@ -216,37 +259,57 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
                         0
                 );
 
-
         scanner.process(image)
-                .addOnSuccessListener(barcodes -> {
+                .addOnSuccessListener(
+                        barcodes -> {
 
-                    if (!barcodes.isEmpty()) {
-
-                        handleBarcodes(barcodes);
-
-                    }
-
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(
+                            if (!barcodes.isEmpty()) {
+                                handleBarcodes(
+                                        barcodes
+                                );
+                            }
+                        }
+                )
+                .addOnFailureListener(
+                        e -> Toast.makeText(
                                 this,
-                                "Scan error: " + e.getMessage(),
+                                "Scan error: "
+                                        + e.getMessage(),
                                 Toast.LENGTH_LONG
                         ).show()
                 );
     }
 
-    private void scanWithAutoCrop(Bitmap bitmap) {
+    private void scanWithAutoCrop(
+            Bitmap bitmap) {
 
-        // First try the full image
+        if (scanned) {
+            return;
+        }
+
+        /*
+         * Full image.
+         */
         scanBitmap(bitmap);
 
+        if (scanned) {
+            return;
+        }
 
-        // Then try center crop
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+        /*
+         * Center crop.
+         */
+        int width =
+                bitmap.getWidth();
 
-        int cropSize = Math.min(width, height);
+        int height =
+                bitmap.getHeight();
+
+        int cropSize =
+                Math.min(
+                        width,
+                        height
+                );
 
         Bitmap centerCrop =
                 Bitmap.createBitmap(
@@ -260,21 +323,35 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
         scanBitmap(centerCrop);
     }
 
-    private void scanBitmapGrid(Bitmap bitmap) {
+    private void scanBitmapGrid(
+            Bitmap bitmap) {
 
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+        if (scanned) {
+            return;
+        }
+
+        int width =
+                bitmap.getWidth();
+
+        int height =
+                bitmap.getHeight();
 
         int cols = 3;
         int rows = 3;
 
-        int cropWidth = width / cols;
-        int cropHeight = height / rows;
+        int cropWidth =
+                width / cols;
 
+        int cropHeight =
+                height / rows;
 
-        for (int y = 0; y < rows; y++) {
+        for (int y = 0;
+             y < rows && !scanned;
+             y++) {
 
-            for (int x = 0; x < cols; x++) {
+            for (int x = 0;
+                 x < cols && !scanned;
+                 x++) {
 
                 Bitmap crop =
                         Bitmap.createBitmap(
@@ -290,92 +367,91 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
         }
     }
 
-
     @OptIn(markerClass = ExperimentalGetImage.class)
-    private void startCamera(PreviewView previewView) {
+    private void startCamera(
+            PreviewView previewView) {
 
-        ListenableFuture<ProcessCameraProvider> future =
-                ProcessCameraProvider.getInstance(this);
+        ListenableFuture<ProcessCameraProvider>
+                future =
+                ProcessCameraProvider
+                        .getInstance(this);
 
+        future.addListener(
+                () -> {
 
-        future.addListener(() -> {
+                    try {
 
-            try {
+                        ProcessCameraProvider provider =
+                                future.get();
 
-                ProcessCameraProvider provider =
-                        future.get();
+                        Preview preview =
+                                new Preview.Builder()
+                                        .build();
 
+                        preview.setSurfaceProvider(
+                                previewView
+                                        .getSurfaceProvider()
+                        );
 
-                Preview preview =
-                        new Preview.Builder()
-                                .build();
+                        ImageAnalysis analysis =
+                                new ImageAnalysis.Builder()
+                                        .setBackpressureStrategy(
+                                                ImageAnalysis
+                                                        .STRATEGY_KEEP_ONLY_LATEST
+                                        )
+                                        .build();
 
+                        analysis.setAnalyzer(
+                                ContextCompat
+                                        .getMainExecutor(this),
+                                this::analyze
+                        );
 
-                preview.setSurfaceProvider(
-                        previewView.getSurfaceProvider()
-                );
+                        provider.unbindAll();
 
+                        provider.bindToLifecycle(
+                                this,
+                                CameraSelector
+                                        .DEFAULT_BACK_CAMERA,
+                                preview,
+                                analysis
+                        );
 
-                ImageAnalysis analysis =
-                        new ImageAnalysis.Builder()
-                                .setBackpressureStrategy(
-                                        ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
-                                )
-                                .build();
+                    } catch (
+                            ExecutionException |
+                            InterruptedException e) {
 
+                        Toast.makeText(
+                                this,
+                                "Scanner error: "
+                                        + e.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
 
-                analysis.setAnalyzer(
-                        ContextCompat.getMainExecutor(this),
-                        this::analyze
-                );
+                        finish();
+                    }
 
-
-                provider.unbindAll();
-
-
-                provider.bindToLifecycle(
-                        this,
-                        CameraSelector.DEFAULT_BACK_CAMERA,
-                        preview,
-                        analysis
-                );
-
-
-            } catch (ExecutionException |
-                     InterruptedException e) {
-
-                Toast.makeText(
-                        this,
-                        "Scanner error: " + e.getMessage(),
-                        Toast.LENGTH_LONG
-                ).show();
-                finish();
-            }
-
-
-        }, ContextCompat.getMainExecutor(this));
+                },
+                ContextCompat.getMainExecutor(this)
+        );
     }
 
-
     @OptIn(markerClass = ExperimentalGetImage.class)
-    private void analyze(ImageProxy imageProxy) {
+    private void analyze(
+            ImageProxy imageProxy) {
 
         if (scanned) {
             imageProxy.close();
             return;
         }
 
-
         Image mediaImage =
                 imageProxy.getImage();
 
-
         if (mediaImage == null) {
-
             imageProxy.close();
             return;
         }
-
 
         InputImage image =
                 InputImage.fromMediaImage(
@@ -385,53 +461,68 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
                                 .getRotationDegrees()
                 );
 
-
         scanner.process(image)
                 .addOnSuccessListener(
                         this::handleBarcodes
                 )
-                .addOnCompleteListener(task ->
-                        imageProxy.close()
+                .addOnCompleteListener(
+                        task ->
+                                imageProxy.close()
                 );
     }
 
-
-    private void handleBarcodes(List<Barcode> barcodes) {
+    /**
+     * Return QR data as bytes.
+     *
+     * Do NOT use getRawValue() for binary
+     * OpenPGP QR data.
+     */
+    private void handleBarcodes(
+            List<Barcode> barcodes) {
 
         if (scanned) {
             return;
         }
 
-
         for (Barcode barcode : barcodes) {
 
-            String value =
-                    barcode.getRawValue();
+            byte[] value =
+                    barcode.getRawBytes();
 
+            if (value == null
+                    || value.length == 0) {
 
-            if (value != null) {
-
-                scanned = true;
-
-
-                Intent result =
-                        new Intent();
-
-                result.putExtra(
-                        "qr_result",
-                        value
-                );
-
-
-                setResult(
-                        RESULT_OK,
-                        result
-                );
-
-                finish();
-
-                return;
+                continue;
             }
+
+            scanned = true;
+
+            Intent result =
+                    new Intent();
+
+            result.putExtra(
+                    EXTRA_QR_RESULT_BYTES,
+                    value
+            );
+
+            setResult(
+                    RESULT_OK,
+                    result
+            );
+
+            finish();
+
+            return;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        if (scanner != null) {
+            scanner.close();
+        }
+
+        super.onDestroy();
     }
 }

@@ -8,15 +8,14 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
 package org.lykae.keychainqr.ui;
-
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,6 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import org.lykae.keychainqr.Constants;
 import org.lykae.keychainqr.R;
 import org.lykae.keychainqr.pgp.PgpHelper;
@@ -39,23 +39,33 @@ import org.lykae.keychainqr.provider.TemporaryFileProvider;
 import org.lykae.keychainqr.ui.base.BaseActivity;
 import org.lykae.keychainqr.util.FileHelper;
 
-
 public class DecryptActivity extends BaseActivity {
-    public static final String APPLICATION_AUTOCRYPT_SETUP = "application/autocrypt-setup";
 
-    /* Intents */
-    public static final String ACTION_DECRYPT_FROM_CLIPBOARD = "DECRYPT_DATA_CLIPBOARD";
+    public static final String APPLICATION_AUTOCRYPT_SETUP =
+            "application/autocrypt-setup";
 
-    public static final String EXTRA_CLIPDATA = "DECRYPT_DATA_CLIPBOARD_DATA";
+    public static final String ACTION_DECRYPT_FROM_CLIPBOARD =
+            "DECRYPT_DATA_CLIPBOARD";
+
+    public static final String EXTRA_CLIPDATA =
+            "DECRYPT_DATA_CLIPBOARD_DATA";
+
+    public static final String EXTRA_QR_BYTES =
+            "DECRYPT_DATA_QR_BYTES";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setFullScreenDialogClose(Activity.RESULT_CANCELED, false);
+        setFullScreenDialogClose(
+                Activity.RESULT_CANCELED,
+                false
+        );
 
-        // Handle intent actions
-        handleActions(savedInstanceState, getIntent());
+        handleActions(
+                savedInstanceState,
+                getIntent()
+        );
     }
 
     @Override
@@ -63,12 +73,10 @@ public class DecryptActivity extends BaseActivity {
         setContentView(R.layout.decrypt_files_activity);
     }
 
-    /**
-     * Handles all actions with this intent
-     */
-    private void handleActions(Bundle savedInstanceState, Intent intent) {
+    private void handleActions(
+            Bundle savedInstanceState,
+            Intent intent) {
 
-        // No need to initialize fragments if we are just being restored
         if (savedInstanceState != null) {
             return;
         }
@@ -78,28 +86,47 @@ public class DecryptActivity extends BaseActivity {
         String action = intent.getAction();
 
         if (action == null) {
-            Toast.makeText(this, "Error: No action specified!", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "Error: No action specified!",
+                    Toast.LENGTH_LONG
+            ).show();
+
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;
         }
 
-        // depending on the data source, we may or may not be able to delete the original file
         boolean canDelete = false;
         boolean isAutocryptSetup = false;
 
         try {
 
             switch (action) {
+
                 case Intent.ACTION_SEND: {
-                    // When sending to Keychain Decrypt via share menu
-                    // Binary via content provider (could also be files)
-                    // override uri to get stream from send
+
                     if (intent.hasExtra(Intent.EXTRA_STREAM)) {
-                        uris.add(intent.getParcelableExtra(Intent.EXTRA_STREAM));
+
+                        Uri streamUri =
+                                intent.getParcelableExtra(
+                                        Intent.EXTRA_STREAM
+                                );
+
+                        if (streamUri != null) {
+                            uris.add(streamUri);
+                        }
+
                     } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
-                        String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-                        Uri uri = readToTempFile(text);
+
+                        String text =
+                                intent.getStringExtra(
+                                        Intent.EXTRA_TEXT
+                                );
+
+                        Uri uri =
+                                readToTempFile(text);
+
                         if (uri != null) {
                             uris.add(uri);
                         }
@@ -109,13 +136,35 @@ public class DecryptActivity extends BaseActivity {
                 }
 
                 case Intent.ACTION_SEND_MULTIPLE: {
+
                     if (intent.hasExtra(Intent.EXTRA_STREAM)) {
-                        uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+
+                        ArrayList<Uri> streamUris =
+                                intent.getParcelableArrayListExtra(
+                                        Intent.EXTRA_STREAM
+                                );
+
+                        if (streamUris != null) {
+                            uris.addAll(streamUris);
+                        }
+
                     } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
-                        for (String text : intent.getStringArrayListExtra(Intent.EXTRA_TEXT)) {
-                            Uri uri = readToTempFile(text);
-                            if (uri != null) {
-                                uris.add(uri);
+
+                        ArrayList<String> texts =
+                                intent.getStringArrayListExtra(
+                                        Intent.EXTRA_TEXT
+                                );
+
+                        if (texts != null) {
+
+                            for (String text : texts) {
+
+                                Uri uri =
+                                        readToTempFile(text);
+
+                                if (uri != null) {
+                                    uris.add(uri);
+                                }
                             }
                         }
                     }
@@ -124,29 +173,48 @@ public class DecryptActivity extends BaseActivity {
                 }
 
                 case ACTION_DECRYPT_FROM_CLIPBOARD: {
+
                     ClipData clip = null;
+
                     if (intent.hasExtra(EXTRA_CLIPDATA)) {
-                        clip = intent.getParcelableExtra(EXTRA_CLIPDATA);
+
+                        clip =
+                                intent.getParcelableExtra(
+                                        EXTRA_CLIPDATA
+                                );
                     }
+
                     if (clip == null) {
                         break;
                     }
 
-                    // check if data is available as uri
                     Uri uri = null;
-                    for (int i = 0; i < clip.getItemCount(); i++) {
-                        ClipData.Item item = clip.getItemAt(i);
-                        Uri itemUri = item.getUri();
+
+                    for (int i = 0;
+                         i < clip.getItemCount();
+                         i++) {
+
+                        ClipData.Item item =
+                                clip.getItemAt(i);
+
+                        Uri itemUri =
+                                item.getUri();
+
                         if (itemUri != null) {
                             uri = itemUri;
                             break;
                         }
                     }
 
-                    // otherwise, coerce to text (almost always possible) and work from there
                     if (uri == null) {
-                        String text = clip.getItemAt(0).coerceToText(this).toString();
-                        uri = readToTempFile(text);
+
+                        String text =
+                                clip.getItemAt(0)
+                                        .coerceToText(this)
+                                        .toString();
+
+                        uri =
+                                readToTempFile(text);
                     }
 
                     if (uri != null) {
@@ -156,19 +224,33 @@ public class DecryptActivity extends BaseActivity {
                     break;
                 }
 
-                // for everything else, just work on the intent data
-                case Intent.ACTION_VIEW:
-                    canDelete = true;
                 case Constants.DECRYPT_DATA:
-                default:
-                    Uri uri = intent.getData();
+                case Intent.ACTION_VIEW: {
 
-                    isAutocryptSetup = APPLICATION_AUTOCRYPT_SETUP.equalsIgnoreCase(intent.getType());
+                    if (Intent.ACTION_VIEW.equals(action)) {
+                        canDelete = true;
+                    }
+
+                    Uri uri =
+                            intent.getData();
+
+                    isAutocryptSetup =
+                            APPLICATION_AUTOCRYPT_SETUP
+                                    .equalsIgnoreCase(
+                                            intent.getType()
+                                    );
 
                     if (uri != null) {
 
-                        if ("com.android.email.attachmentprovider".equals(uri.getHost())) {
-                            Toast.makeText(this, R.string.error_reading_aosp, Toast.LENGTH_LONG).show();
+                        if ("com.android.email.attachmentprovider"
+                                .equals(uri.getHost())) {
+
+                            Toast.makeText(
+                                    this,
+                                    R.string.error_reading_aosp,
+                                    Toast.LENGTH_LONG
+                            ).show();
+
                             finish();
                             return;
                         }
@@ -176,62 +258,233 @@ public class DecryptActivity extends BaseActivity {
                         uris.add(uri);
                     }
 
+                    break;
+                }
+
+                default: {
+
+                    Uri uri =
+                            intent.getData();
+
+                    isAutocryptSetup =
+                            APPLICATION_AUTOCRYPT_SETUP
+                                    .equalsIgnoreCase(
+                                            intent.getType()
+                                    );
+
+                    if (uri != null) {
+                        uris.add(uri);
+                    }
+
+                    break;
+                }
             }
 
         } catch (IOException e) {
-            Toast.makeText(this, R.string.error_reading_text, Toast.LENGTH_LONG).show();
+
+            Toast.makeText(
+                    this,
+                    R.string.error_reading_text,
+                    Toast.LENGTH_LONG
+            ).show();
+
             finish();
             return;
         }
 
-        // Definitely need a data uri with the decrypt_data intent
+        if (intent.hasExtra(EXTRA_QR_BYTES)) {
+
+            byte[] qrBytes =
+                    intent.getByteArrayExtra(
+                            EXTRA_QR_BYTES
+                    );
+
+            if (qrBytes == null
+                    || qrBytes.length == 0) {
+
+                Toast.makeText(
+                        this,
+                        "No QR data to decrypt!",
+                        Toast.LENGTH_LONG
+                ).show();
+
+                setResult(
+                        Activity.RESULT_CANCELED
+                );
+
+                finish();
+                return;
+            }
+
+            try {
+
+                Uri qrUri =
+                        readToTempFile(qrBytes);
+
+                if (qrUri == null) {
+
+                    Toast.makeText(
+                            this,
+                            R.string.error_reading_text,
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                    setResult(
+                            Activity.RESULT_CANCELED
+                    );
+
+                    finish();
+                    return;
+                }
+
+                uris.clear();
+                uris.add(qrUri);
+
+                canDelete = true;
+
+            } catch (IOException e) {
+
+                Toast.makeText(
+                        this,
+                        R.string.error_reading_text,
+                        Toast.LENGTH_LONG
+                ).show();
+
+                setResult(
+                        Activity.RESULT_CANCELED
+                );
+
+                finish();
+                return;
+            }
+        }
+
         if (uris.isEmpty()) {
-            Toast.makeText(this, "No data to decrypt!", Toast.LENGTH_LONG).show();
-            setResult(Activity.RESULT_CANCELED);
+
+            Toast.makeText(
+                    this,
+                    "No data to decrypt!",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            setResult(
+                    Activity.RESULT_CANCELED
+            );
+
             finish();
             return;
         }
 
-        displayListFragment(uris, canDelete, isAutocryptSetup);
-
+        displayListFragment(
+                uris,
+                canDelete,
+                isAutocryptSetup
+        );
     }
-
     @Nullable
-    public Uri readToTempFile(String text) throws IOException {
-        Uri tempFile = TemporaryFileProvider.createFile(this);
-        OutputStream outStream = FileHelper.openOutputStreamSafe(getContentResolver(), tempFile);
+    public Uri readToTempFile(String text)
+            throws IOException {
+
+        if (text == null) {
+            return null;
+        }
+
+        Uri tempFile =
+                TemporaryFileProvider.createFile(this);
+
+        OutputStream outStream =
+                FileHelper.openOutputStreamSafe(
+                        getContentResolver(),
+                        tempFile
+                );
+
         if (outStream == null) {
             return null;
         }
 
-        // clean up ascii armored message, fixing newlines and stuff
-        String cleanedText = PgpHelper.getPgpMessageContent(text);
-        if (cleanedText == null) {
-            return null;
+        try {
+
+            // Clean up ASCII armored message.
+            String cleanedText =
+                    PgpHelper.getPgpMessageContent(text);
+
+            if (cleanedText == null) {
+                return null;
+            }
+
+            outStream.write(
+                    cleanedText.getBytes()
+            );
+
+        } finally {
+            outStream.close();
         }
 
-        // if cleanup didn't work, just try the raw data
-        outStream.write(cleanedText.getBytes());
-        outStream.close();
         return tempFile;
     }
 
-    public void displayListFragment(ArrayList<Uri> inputUris, boolean canDelete, boolean isAutocryptSetup) {
+    @Nullable
+    public Uri readToTempFile(byte[] data)
+            throws IOException {
 
-        DecryptListFragment frag = DecryptListFragment.newInstance(inputUris, canDelete, isAutocryptSetup);
+        if (data == null || data.length == 0) {
+            return null;
+        }
 
-        FragmentManager fragMan = getSupportFragmentManager();
+        Uri tempFile =
+                TemporaryFileProvider.createFile(this);
 
-        FragmentTransaction trans = fragMan.beginTransaction();
-        trans.replace(R.id.decrypt_files_fragment_container, frag);
+        OutputStream outStream =
+                FileHelper.openOutputStreamSafe(
+                        getContentResolver(),
+                        tempFile
+                );
 
-        // if there already is a fragment, allow going back to that. otherwise, we're top level!
-        if (fragMan.getFragments() != null && !fragMan.getFragments().isEmpty()) {
+        if (outStream == null) {
+            return null;
+        }
+
+        try {
+
+            outStream.write(data);
+            outStream.flush();
+
+        } finally {
+            outStream.close();
+        }
+
+        return tempFile;
+    }
+
+    public void displayListFragment(
+            ArrayList<Uri> inputUris,
+            boolean canDelete,
+            boolean isAutocryptSetup) {
+
+        DecryptListFragment frag =
+                DecryptListFragment.newInstance(
+                        inputUris,
+                        canDelete,
+                        isAutocryptSetup
+                );
+
+        FragmentManager fragMan =
+                getSupportFragmentManager();
+
+        FragmentTransaction trans =
+                fragMan.beginTransaction();
+
+        trans.replace(
+                R.id.decrypt_files_fragment_container,
+                frag
+        );
+
+        if (fragMan.getFragments() != null
+                && !fragMan.getFragments().isEmpty()) {
+
             trans.addToBackStack("list");
         }
 
         trans.commit();
-
     }
-
 }

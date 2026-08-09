@@ -1,23 +1,23 @@
 /*
- * Copyright (C) 2017 Schürmann & Breitmoser GbR
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2017 Schürmann & Breitmoser GbR
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see http://www.gnu.org/licenses/.
+*/
 
 package org.lykae.keychainqr.ui;
 
-
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 
 import android.app.Activity;
@@ -28,8 +28,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +44,7 @@ import org.lykae.keychainqr.ui.util.Notify;
 import org.lykae.keychainqr.ui.util.Notify.Style;
 import org.lykae.keychainqr.ui.util.SubtleAttentionSeeker;
 import org.lykae.keychainqr.util.FileHelper;
+
 import timber.log.Timber;
 
 public class EncryptDecryptFragment extends Fragment {
@@ -52,65 +55,136 @@ public class EncryptDecryptFragment extends Fragment {
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    /*
+     * Must match QrCodeCaptureActivity's byte result extra.
+     */
+    private static final String EXTRA_QR_RESULT_BYTES =
+            "qr_result_bytes";
 
+    @Override
+    public void onActivityCreated(
+            Bundle savedInstanceState) {
+
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.encrypt_decrypt_fragment, container, false);
+    public View onCreateView(
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
-        View mEncryptFile = view.findViewById(R.id.encrypt_files);
-        View mEncryptText = view.findViewById(R.id.encrypt_text);
-        View mDecryptFile = view.findViewById(R.id.decrypt_files);
-        View mDecryptFromClipboard = view.findViewById(R.id.decrypt_from_clipboard);
-        mClipboardIcon = view.findViewById(R.id.clipboard_icon);
+        View view =
+                inflater.inflate(
+                        R.layout.encrypt_decrypt_fragment,
+                        container,
+                        false
+                );
 
-        mEncryptFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent encrypt = new Intent(getActivity(), EncryptFilesActivity.class);
-                startActivity(encrypt);
-            }
-        });
+        View mEncryptFile =
+                view.findViewById(
+                        R.id.encrypt_files
+                );
 
-        mEncryptText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent encrypt = new Intent(getActivity(), EncryptTextActivity.class);
-                startActivity(encrypt);
-            }
-        });
+        View mEncryptText =
+                view.findViewById(
+                        R.id.encrypt_text
+                );
 
-        mDecryptFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FileHelper.openDocument(EncryptDecryptFragment.this, "*/*", false, REQUEST_CODE_INPUT);
-            }
-        });
+        View mDecryptFile =
+                view.findViewById(
+                        R.id.decrypt_files
+                );
 
-        mDecryptFromClipboard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                decryptFromClipboard();
-            }
-        });
+        View mDecryptFromClipboard =
+                view.findViewById(
+                        R.id.decrypt_from_clipboard
+                );
 
-        view.findViewById(R.id.decrypt_qr_code).setOnClickListener(v -> {
+        mClipboardIcon =
+                view.findViewById(
+                        R.id.clipboard_icon
+                );
 
-            Intent qrIntent = new Intent(
-                    getActivity(),
-                    QrCodeCaptureActivity.class
-            );
+        mEncryptFile.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent encrypt =
+                                new Intent(
+                                        getActivity(),
+                                        EncryptFilesActivity.class
+                                );
+
+                        startActivity(encrypt);
+                    }
+                }
+        );
+
+        mEncryptText.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent encrypt =
+                                new Intent(
+                                        getActivity(),
+                                        EncryptTextActivity.class
+                                );
+
+                        startActivity(encrypt);
+                    }
+                }
+        );
+
+        mDecryptFile.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        FileHelper.openDocument(
+                                EncryptDecryptFragment.this,
+                                "*/*",
+                                false,
+                                REQUEST_CODE_INPUT
+                        );
+                    }
+                }
+        );
+
+        mDecryptFromClipboard.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        decryptFromClipboard();
+                    }
+                }
+        );
+
+        view.findViewById(
+                R.id.decrypt_qr_code
+        ).setOnClickListener(v -> {
+
+            Intent qrIntent =
+                    new Intent(
+                            getActivity(),
+                            QrCodeCaptureActivity.class
+                    );
 
             qrIntent.putExtra(
                     QrCodeCaptureActivity.EXTRA_SCAN_MODE,
                     QrCodeCaptureActivity.MODE_DECRYPT_MESSAGE
             );
 
-            startActivityForResult(qrIntent, REQUEST_QR);
+            startActivityForResult(
+                    qrIntent,
+                    REQUEST_QR
+            );
         });
 
         return view;
@@ -118,131 +192,222 @@ public class EncryptDecryptFragment extends Fragment {
 
     private void decryptFromClipboard() {
 
-        Activity activity = getActivity();
+        Activity activity =
+                getActivity();
+
         if (activity == null) {
             return;
         }
 
-        final CharSequence clipboardText = ClipboardReflection.getClipboardText(activity);
+        final CharSequence clipboardText =
+                ClipboardReflection.getClipboardText(
+                        activity
+                );
+
         if (TextUtils.isEmpty(clipboardText)) {
-            Notify.create(activity, R.string.error_clipboard_empty, Style.ERROR).show();
+
+            Notify.create(
+                    activity,
+                    R.string.error_clipboard_empty,
+                    Style.ERROR
+            ).show();
+
             return;
         }
 
-        ClipboardManager clipMan = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipMan =
+                (ClipboardManager)
+                        getActivity().getSystemService(
+                                Context.CLIPBOARD_SERVICE
+                        );
+
         if (clipMan == null) {
-            Timber.e("Couldn't get ClipboardManager instance!");
+
+            Timber.e(
+                    "Couldn't get ClipboardManager instance!"
+            );
+
             return;
         }
 
-        ClipData clip = clipMan.getPrimaryClip();
+        ClipData clip =
+                clipMan.getPrimaryClip();
+
         if (clip == null) {
-            Timber.e("Couldn't get clipboard data!");
+
+            Timber.e(
+                    "Couldn't get clipboard data!"
+            );
+
             return;
         }
 
-        Intent clipboardDecrypt = new Intent(getActivity(), DecryptActivity.class);
-        clipboardDecrypt.putExtra(DecryptActivity.EXTRA_CLIPDATA, clip);
-        clipboardDecrypt.setAction(DecryptActivity.ACTION_DECRYPT_FROM_CLIPBOARD);
-        startActivityForResult(clipboardDecrypt, 0);
+        Intent clipboardDecrypt =
+                new Intent(
+                        getActivity(),
+                        DecryptActivity.class
+                );
+
+        clipboardDecrypt.putExtra(
+                DecryptActivity.EXTRA_CLIPDATA,
+                clip
+        );
+
+        clipboardDecrypt.setAction(
+                DecryptActivity.ACTION_DECRYPT_FROM_CLIPBOARD
+        );
+
+        startActivityForResult(
+                clipboardDecrypt,
+                0
+        );
     }
 
     @Override
     public void onResume() {
+
         super.onResume();
 
         checkClipboardForEncryptedText();
     }
 
     private void checkClipboardForEncryptedText() {
-        CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
+
+        CharSequence clipboardText =
+                ClipboardReflection.getClipboardText(
+                        getActivity()
+                );
 
         new AsyncTask<Void, Void, Boolean>() {
+
             @Override
-            protected Boolean doInBackground(Void... voids) {
+            protected Boolean doInBackground(
+                    Void... voids) {
+
                 if (clipboardText == null) {
                     return false;
                 }
 
-                // see if it looks like a pgp thing
-                Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
-                boolean animate = matcher.matches();
+                Matcher matcher =
+                        PgpHelper.PGP_MESSAGE.matcher(
+                                clipboardText
+                        );
 
-                // see if it looks like another pgp thing
+                boolean animate =
+                        matcher.matches();
+
                 if (!animate) {
-                    matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText);
-                    animate = matcher.matches();
+
+                    matcher =
+                            PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(
+                                    clipboardText
+                            );
+
+                    animate =
+                            matcher.matches();
                 }
+
                 return animate;
             }
 
             @Override
-            protected void onPostExecute(Boolean animate) {
+            protected void onPostExecute(
+                    Boolean animate) {
+
                 super.onPostExecute(animate);
 
-                // if so, animate the clipboard icon just a bit~
                 if (animate) {
-                    SubtleAttentionSeeker.tada(mClipboardIcon, 1.5f).start();
+
+                    SubtleAttentionSeeker
+                            .tada(
+                                    mClipboardIcon,
+                                    1.5f
+                            )
+                            .start();
                 }
             }
         }.execute();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data) {
+
+        super.onActivityResult(
+                requestCode,
+                resultCode,
+                data
+        );
 
         if (requestCode == REQUEST_QR
                 && resultCode == Activity.RESULT_OK
                 && data != null) {
 
-            String qrText = data.getStringExtra("qr_result");
+            byte[] qrBytes =
+                    data.getByteArrayExtra(
+                            "qr_result_bytes"
+                    );
 
-            if (qrText == null) {
+            if (qrBytes == null
+                    || qrBytes.length == 0) {
+
                 return;
             }
 
-            if (qrText.contains("BEGIN PGP MESSAGE")) {
+            Intent decryptIntent =
+                    new Intent(
+                            getActivity(),
+                            DecryptActivity.class
+                    );
 
-                Intent decryptIntent = new Intent(
-                        Intent.ACTION_SEND
-                );
+            decryptIntent.setAction(
+                    Intent.ACTION_SEND
+            );
 
-                decryptIntent.setType("text/plain");
-                decryptIntent.putExtra(
-                        Intent.EXTRA_TEXT,
-                        qrText
-                );
+            decryptIntent.putExtra(
+                    DecryptActivity.EXTRA_QR_BYTES,
+                    qrBytes
+            );
 
-                decryptIntent.setClass(
-                        getActivity(),
-                        DecryptActivity.class
-                );
-
-                startActivity(decryptIntent);
-            }
+            startActivity(decryptIntent);
 
             return;
         }
 
         if (requestCode == REQUEST_CODE_INPUT) {
 
-            if (resultCode == Activity.RESULT_OK && data != null) {
+            if (resultCode == Activity.RESULT_OK
+                    && data != null) {
+
                 Uri uri = data.getData();
 
                 if (uri == null) {
-                    Notify.create(getActivity(),
+
+                    Notify.create(
+                            getActivity(),
                             R.string.no_file_selected,
-                            Notify.Style.ERROR).show();
+                            Notify.Style.ERROR
+                    ).show();
+
                     return;
                 }
 
-                Intent intent = new Intent(getActivity(), DecryptActivity.class);
-                intent.setAction(Intent.ACTION_VIEW);
+                Intent intent =
+                        new Intent(
+                                getActivity(),
+                                DecryptActivity.class
+                        );
+
+                intent.setAction(
+                        Intent.ACTION_VIEW
+                );
+
                 intent.setData(uri);
+
                 startActivity(intent);
             }
         }
     }
-
 }

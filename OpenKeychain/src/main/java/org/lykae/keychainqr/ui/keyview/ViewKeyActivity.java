@@ -576,9 +576,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
         );
     }
 
-    /**
-     * Show the actual ASCII-armored public key in one QR.
-     */
     private void showQrCodeDialog() {
 
         if (unifiedKeyInfo == null) {
@@ -587,14 +584,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
         try {
 
-            String armoredKey =
-                    keyRepository
-                            .getPublicKeyRingAsArmoredString(
-                                    unifiedKeyInfo.master_key_id()
-                            );
+            byte[] publicKeyBytes =
+                    keyRepository.getPublicKeyRingAsBytes(
+                            unifiedKeyInfo.master_key_id()
+                    );
 
-            if (armoredKey == null
-                    || armoredKey.trim().isEmpty()) {
+            if (publicKeyBytes == null
+                    || publicKeyBytes.length == 0) {
 
                 Notify.create(
                         this,
@@ -612,12 +608,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                     );
 
             /*
-             * Pass the complete public key instead of
-             * passing the fingerprint.
+             * Pass the raw OpenPGP public key.
              */
             qrCodeIntent.putExtra(
-                    QrCodeViewActivity.EXTRA_TEXT,
-                    armoredKey
+                    QrCodeViewActivity.EXTRA_BYTES,
+                    publicKeyBytes
             );
 
             Bundle opts = null;
@@ -642,7 +637,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                     opts
             );
 
-        } catch (IOException | NotFoundException e) {
+        } catch (NotFoundException e) {
 
             Timber.e(
                     e,
@@ -1233,25 +1228,23 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
     private void loadQrCode(final long masterKeyId) {
 
-        AsyncTask<Void, Void, String> loadTask =
-                new AsyncTask<Void, Void, String>() {
+        AsyncTask<Void, Void, byte[]> loadTask =
+                new AsyncTask<Void, Void, byte[]>() {
 
                     private Exception error;
 
                     @Override
-                    protected String doInBackground(
+                    protected byte[] doInBackground(
                             Void... unused) {
 
                         try {
 
                             return keyRepository
-                                    .getPublicKeyRingAsArmoredString(
+                                    .getPublicKeyRingAsBytes(
                                             masterKeyId
                                     );
 
-                        } catch (
-                                IOException
-                                | NotFoundException e) {
+                        } catch (NotFoundException e) {
 
                             error = e;
                             return null;
@@ -1260,10 +1253,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
                     @Override
                     protected void onPostExecute(
-                            String armoredKey) {
+                            byte[] publicKeyBytes) {
 
-                        if (armoredKey == null
-                                || armoredKey.trim().isEmpty()) {
+                        if (publicKeyBytes == null
+                                || publicKeyBytes.length == 0) {
 
                             Timber.e(
                                     error,
@@ -1283,12 +1276,24 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
                             Bitmap qrCode =
                                     QrCodeUtils.getQRCodeBitmap(
-                                            armoredKey,
+                                            publicKeyBytes,
                                             0
                                     );
 
+                            if (qrCode == null) {
+                                throw new IllegalStateException(
+                                        "QR code generation returned null"
+                                );
+                            }
+
+                            /*
+                             * Cache marker.
+                             *
+                             * We no longer store the armored key here.
+                             * Use the key ID as the cache identity instead.
+                             */
                             qrCodeLoaded =
-                                    armoredKey;
+                                    Long.toString(masterKeyId);
 
                             qrCodeLoadedForKeyId =
                                     masterKeyId;

@@ -288,8 +288,7 @@ public class EncryptTextFragment
         }
         data.setHiddenRecipients(mHiddenRecipients);
 
-        // Always use armor for messages
-        data.setEnableAsciiArmorOutput(true);
+        data.setEnableAsciiArmorOutput(false);
 
         EncryptActivity modeInterface = (EncryptActivity) getActivity();
         EncryptModeFragment modeFragment = modeInterface.getModeFragment();
@@ -384,15 +383,13 @@ public class EncryptTextFragment
         hideKeyboard();
 
         if (mShareAfterEncrypt) {
-            // Share encrypted message/file
             startActivity(Intent.createChooser(createSendIntent(result.getResultBytes()),
                     getString(R.string.title_share_message)));
         } else if (mShowQrAfterEncrypt) {
-            // Show encrypted message/file QR
             Intent intent = new Intent(getActivity(), QrCodeViewActivity.class);
             intent.putExtra(
-                    QrCodeViewActivity.EXTRA_TEXT,
-                    new String(result.getResultBytes())
+                    QrCodeViewActivity.EXTRA_BYTES,
+                    result.getResultBytes()
             );
             startActivity(intent);
         } else if (mReturnProcessTextAfterEncrypt) {
@@ -401,7 +398,6 @@ public class EncryptTextFragment
             getActivity().setResult(Activity.RESULT_OK, resultIntent);
             getActivity().finish();
         } else {
-            // Copy to clipboard
             copyToClipboard(result);
         }
 

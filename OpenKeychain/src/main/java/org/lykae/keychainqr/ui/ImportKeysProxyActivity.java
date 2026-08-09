@@ -1,24 +1,23 @@
 /*
- * Copyright (C) 2017 Schürmann & Breitmoser GbR
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2017 Schürmann & Breitmoser GbR
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see http://www.gnu.org/licenses/.
+*/
 
 package org.lykae.keychainqr.ui;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Build;
@@ -40,10 +39,9 @@ import org.lykae.keychainqr.operations.results.OperationResult.LogType;
 import org.lykae.keychainqr.operations.results.SingletonResult;
 import org.lykae.keychainqr.service.ImportKeyringParcel;
 import org.lykae.keychainqr.ui.base.CryptoOperationHelper;
-import org.lykae.keychainqr.util.IntentIntegratorSupportV4;
+
 import timber.log.Timber;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class ImportKeysProxyActivity extends FragmentActivity
@@ -59,6 +57,8 @@ public class ImportKeysProxyActivity extends FragmentActivity
             Constants.INTENT_PREFIX + "SCAN_QR_CODE_IMPORT";
 
     public static final String EXTRA_FINGERPRINT = "fingerprint";
+
+    private static final String EXTRA_QR_RESULT_BYTES = "qr_result_bytes";
 
     private ArrayList mKeyList;
 
@@ -116,13 +116,52 @@ public class ImportKeysProxyActivity extends FragmentActivity
                     returnResult(data);
 
                 } else {
-                    super.onActivityResult(requestCode, resultCode, data);
+                    super.onActivityResult(
+                            requestCode,
+                            resultCode,
+                            data
+                    );
+
                     finish();
                 }
             }
+
+            return;
         }
 
-        if (data != null && data.hasExtra("qr_result")) {
+        /*
+         * QR scanner returns the actual bytes from the QR BYTE-mode
+         * segment. Do not convert them through String here.
+         */
+        if (data != null
+                && data.hasExtra(EXTRA_QR_RESULT_BYTES)) {
+
+            if (resultCode != RESULT_OK) {
+                finish();
+                return;
+            }
+
+            byte[] scannedBytes =
+                    data.getByteArrayExtra(
+                            EXTRA_QR_RESULT_BYTES
+                    );
+
+            if (scannedBytes == null
+                    || scannedBytes.length == 0) {
+
+                finish();
+                return;
+            }
+
+            processScannedContent(scannedBytes);
+            return;
+        }
+
+        /*
+         * Compatibility with older scanner results.
+         */
+        if (data != null
+                && data.hasExtra("qr_result")) {
 
             if (resultCode != RESULT_OK) {
                 finish();
@@ -139,53 +178,51 @@ public class ImportKeysProxyActivity extends FragmentActivity
                 return;
             }
 
-            processScannedContent(scannedContent);
+            processScannedContent(
+                    scannedContent.getBytes(
+                            java.nio.charset.StandardCharsets.UTF_8
+                    )
+            );
         }
     }
 
     /**
-     * Process the complete ASCII-armored public key from the QR.
+     * Process the actual bytes contained in the QR code.
      *
-     * No fingerprint lookup is performed.
-     * No keyserver is contacted.
+     * There is deliberately no String conversion here.
      */
-    private void processScannedContent(String content) {
+    private void processScannedContent(byte[] content) {
 
-        Timber.d("Received QR key, length=%d", content.length());
+        Timber.d(
+                "Received QR key, %d bytes",
+                content.length
+        );
 
-        String keyText = content.trim();
-
-        if (!keyText.contains("-----BEGIN PGP")) {
-            SingletonResult result = new SingletonResult(
-                    SingletonResult.RESULT_ERROR,
-                    LogType.MSG_WRONG_QR_CODE
-            );
-
-            Intent intent = new Intent();
-            intent.putExtra(
-                    SingletonResult.EXTRA_RESULT,
-                    result
-            );
-
-            returnResult(intent);
-            return;
-        }
-
+        /*
+         * Your public-key QR currently contains the binary OpenPGP
+         * packet data, not ASCII armor.
+         *
+         * Therefore import the bytes directly.
+         */
         try {
-            byte[] keyBytes =
-                    keyText.getBytes(StandardCharsets.UTF_8);
 
-            importKeys(keyBytes);
+            importKeys(content);
 
         } catch (Exception e) {
-            Timber.e(e, "Unable to process scanned public key");
 
-            SingletonResult result = new SingletonResult(
-                    SingletonResult.RESULT_ERROR,
-                    LogType.MSG_WRONG_QR_CODE
+            Timber.e(
+                    e,
+                    "Unable to process scanned public key"
             );
 
+            SingletonResult result =
+                    new SingletonResult(
+                            SingletonResult.RESULT_ERROR,
+                            LogType.MSG_WRONG_QR_CODE
+                    );
+
             Intent intent = new Intent();
+
             intent.putExtra(
                     SingletonResult.EXTRA_RESULT,
                     result
@@ -198,22 +235,33 @@ public class ImportKeysProxyActivity extends FragmentActivity
     /**
      * Import the actual key bytes.
      *
-     * This is the important difference from
-     * createFromReference(): there is no fingerprint
-     * and therefore no keyserver lookup.
+     * No ASCII armor conversion.
+     * No fingerprint lookup.
+     * No keyserver lookup.
      */
     public void importKeys(byte[] keyringData) {
 
-        ParcelableKeyRing keyEntry =
-                ParcelableKeyRing.createFromEncodedBytes(keyringData);
+        if (keyringData == null
+                || keyringData.length == 0) {
 
-        ArrayList selectedEntries = new ArrayList<>();
+            return;
+        }
+
+        ParcelableKeyRing keyEntry =
+                ParcelableKeyRing.createFromEncodedBytes(
+                        keyringData
+                );
+
+        ArrayList selectedEntries =
+                new ArrayList<>();
+
         selectedEntries.add(keyEntry);
 
         startImportService(selectedEntries);
     }
 
-    private void startImportService(ArrayList keyRings) {
+    private void startImportService(
+            ArrayList keyRings) {
 
         mKeyList = keyRings;
 
@@ -230,6 +278,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
     @Override
     public ImportKeyringParcel createOperationInput() {
+
         return ImportKeyringParcel.createImportKeyringParcel(
                 mKeyList,
                 null
@@ -237,9 +286,16 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     @Override
-    public void onCryptoOperationSuccess(ImportKeyResult result) {
+    public void onCryptoOperationSuccess(
+            ImportKeyResult result) {
+
         Intent data = new Intent();
-        data.putExtra(OperationResult.EXTRA_RESULT, result);
+
+        data.putExtra(
+                OperationResult.EXTRA_RESULT,
+                result
+        );
+
         returnResult(data);
     }
 
@@ -249,9 +305,11 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     @Override
-    public void onCryptoOperationError(ImportKeyResult result) {
+    public void onCryptoOperationError(
+            ImportKeyResult result) {
 
-        Bundle returnData = new Bundle();
+        Bundle returnData =
+                new Bundle();
 
         returnData.putParcelable(
                 OperationResult.EXTRA_RESULT,
@@ -259,6 +317,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
         );
 
         Intent data = new Intent();
+
         data.putExtras(returnData);
 
         returnResult(data);
@@ -275,7 +334,8 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
     public void returnResult(Intent data) {
 
-        String action = getIntent().getAction();
+        String action =
+                getIntent().getAction();
 
         if (ACTION_QR_CODE_API.equals(action)) {
 
@@ -288,12 +348,13 @@ public class ImportKeysProxyActivity extends FragmentActivity
                     && result.getLog() != null
                     && result.getLog().getLast() != null) {
 
-                String str = getString(
-                        result.getLog()
-                                .getLast()
-                                .mType
-                                .getMsgId()
-                );
+                String str =
+                        getString(
+                                result.getLog()
+                                        .getLast()
+                                        .mType
+                                        .getMsgId()
+                        );
 
                 Toast.makeText(
                         this,
@@ -306,24 +367,31 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
         } else {
 
-            setResult(RESULT_OK, data);
+            setResult(
+                    RESULT_OK,
+                    data
+            );
+
             finish();
         }
     }
 
     /**
-     * NFC already gives us the actual key bytes,
-     * so keep this path completely offline too.
+     * NFC already gives us actual key bytes.
+     * Keep this path completely binary too.
      */
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-    void handleActionNdefDiscovered(Intent intent) {
+    void handleActionNdefDiscovered(
+            Intent intent) {
 
         Parcelable[] rawMsgs =
                 intent.getParcelableArrayExtra(
                         NfcAdapter.EXTRA_NDEF_MESSAGES
                 );
 
-        if (rawMsgs == null || rawMsgs.length == 0) {
+        if (rawMsgs == null
+                || rawMsgs.length == 0) {
+
             finish();
             return;
         }
