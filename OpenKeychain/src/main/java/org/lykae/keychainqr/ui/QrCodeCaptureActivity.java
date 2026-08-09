@@ -2,6 +2,7 @@ package org.lykae.keychainqr.ui;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.media.Image;
@@ -10,6 +11,7 @@ import android.provider.MediaStore;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
@@ -524,5 +526,39 @@ public class QrCodeCaptureActivity extends AppCompatActivity {
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+
+        super.onRequestPermissionsResult(
+                requestCode,
+                permissions,
+                grantResults
+        );
+
+        if (requestCode != CAMERA_REQUEST) {
+            return;
+        }
+
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            PreviewView previewView =
+                    findViewById(R.id.preview_view);
+
+            startCamera(previewView);
+
+        } else {
+
+            Toast.makeText(
+                    this,
+                    "Camera permission is required to scan QR codes",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
     }
 }
