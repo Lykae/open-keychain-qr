@@ -43,7 +43,7 @@ public class CreateKeyStartFragment extends Fragment {
 
     View mCreateKey;
     View mImportKey;
-    View mSecurityToken;
+    //View mSecurityToken;
     TextView mSkipOrCancel;
 
 
@@ -66,7 +66,7 @@ public class CreateKeyStartFragment extends Fragment {
 
         mCreateKey = view.findViewById(R.id.create_key_create_key_button);
         mImportKey = view.findViewById(R.id.create_key_import_button);
-        mSecurityToken = view.findViewById(R.id.create_key_security_token_button);
+        //mSecurityToken = view.findViewById(R.id.create_key_security_token_button);
         mSkipOrCancel = view.findViewById(R.id.create_key_cancel);
 
         if (mCreateKeyActivity.mFirstTime) {
@@ -80,10 +80,10 @@ public class CreateKeyStartFragment extends Fragment {
             mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
         });
 
-        mSecurityToken.setOnClickListener(v -> {
-            CreateSecurityTokenWaitFragment frag = new CreateSecurityTokenWaitFragment();
-            mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
-        });
+        //mSecurityToken.setOnClickListener(v -> {
+        //    CreateSecurityTokenWaitFragment frag = new CreateSecurityTokenWaitFragment();
+        //    mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+        //});
 
         mImportKey.setOnClickListener(v -> {
             Intent intent = new Intent(mCreateKeyActivity, ImportKeysActivity.class);

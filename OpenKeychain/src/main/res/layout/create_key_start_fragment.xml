@@ -50,7 +50,7 @@
             android:clickable="true"
             style="?android:attr/borderlessButtonStyle" />
 
-        <RelativeLayout
+        <!--<RelativeLayout
             android:id="@+id/create_key_security_token_button"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
@@ -96,7 +96,7 @@
                 android:layout_toLeftOf="@+id/imageView5"
                 android:layout_toStartOf="@+id/imageView5" />
 
-        </RelativeLayout>
+        </RelativeLayout>-->
 
         <TextView
             android:id="@+id/create_key_import_button"
